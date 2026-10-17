@@ -159,10 +159,36 @@ function getStatsText() {
 function getSupportText() {
   return `📞 <b>ADMIN VA QO'LLAB-QUVVATLASH:</b>\n\n` +
     `Savollaringiz, takliflaringiz yoki Garant arbitraji bo'yicha murojaat qilishingiz mumkin:\n\n` +
-    `👤 <b>Bosh Garant & Moderator:</b> @fc_garant_admin\n` +
-    `📢 <b>Rasmiy Kanal:</b> @fc_mobile_bazar_uz\n` +
+    `👤 <b>Bosh Garant & Moderator:</b> @abdulazizdilshodov\n` +
     `⏰ <b>Ish vaqti:</b> 24/7 Kun-u tun\n` +
     `🛡️ <i>Xavfsizligingiz bizning oliy maqsadimiz!</i>`;
+}
+
+// Support keyboard with direct link to admin
+function getSupportKeyboard() {
+  const siteUrl = getSiteUrl();
+  const isHttps = siteUrl.startsWith('https://');
+  const buttons = [
+    [
+      { text: '💬 Admin bilan bog\'lanish (@abdulazizdilshodov)', url: 'https://t.me/abdulazizdilshodov' }
+    ]
+  ];
+
+  if (isHttps) {
+    buttons.push([
+      { text: '🚀 FC Bazarni ochish (Web App)', web_app: { url: siteUrl } }
+    ]);
+  } else {
+    buttons.push([
+      { text: '🌐 Saytga kirish', url: siteUrl }
+    ]);
+  }
+
+  buttons.push([
+    { text: '⬅️ Asosiy menyu', callback_data: 'refresh' }
+  ]);
+
+  return { inline_keyboard: buttons };
 }
 
 function escapeHtml(text) {
@@ -252,7 +278,7 @@ async function handleUpdate(update) {
         chat_id: chatId,
         text: getSupportText(),
         parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
+        reply_markup: getSupportKeyboard()
       });
       return;
     }
@@ -294,7 +320,7 @@ async function handleUpdate(update) {
         message_id: messageId,
         text: getSupportText(),
         parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
+        reply_markup: getSupportKeyboard()
       });
     } else if (data === 'refresh') {
       await callApi('editMessageText', {

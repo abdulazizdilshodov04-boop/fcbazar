@@ -49,7 +49,7 @@ async function seed() {
     email: 'admin@fc.uz',
     password: adminPasswordHash,
     phone: '+998 99 000 00 00',
-    telegram: '@fcbazar_admin',
+    telegram: '@abdulazizdilshodov',
     role: 'admin',
     balance: 0,
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=admin',
