@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FC BAZAR — FC Mobile Akkauntlar Savdosi va Xavfsiz Garant Tizimi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&family=Inter:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="dark-theme">
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="app.navigate('catalog')">
+        <div class="logo-shield">
+          <span class="logo-fc">FC</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">BAZAR<span class="brand-dot">.UZ</span></span>
+          <span class="brand-sub">FC MOBILE MARKET 24/7</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-link active" onclick="app.navigate('catalog')" id="nav-btn-catalog">
+          <i class="fa-solid fa-gamepad"></i> Akkauntlar
+        </button>
+        <button class="nav-link" onclick="app.navigate('howitworks')" id="nav-btn-how">
+          <i class="fa-solid fa-shield-halved"></i> Garant Tizimi
+        </button>
+        <button class="nav-link" onclick="app.navigate('deals')" id="nav-btn-deals">
+          <i class="fa-solid fa-handshake"></i> Bitimlarim
+          <span class="badge-counter" id="active-deals-count" style="display:none;">0</span>
+        </button>
+        <button class="nav-link admin-only" onclick="app.navigate('admin')" id="nav-btn-admin" style="display:none;">
+          <i class="fa-solid fa-crown text-gold"></i> Admin Panel
+        </button>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Sell Account CTA Button -->
+        <button class="btn btn-neon-sell" onclick="app.openSellModal()">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>Akkaunt Sotish</span>
+        </button>
+
+        <!-- Guest View (Not Logged In) -->
+        <div class="auth-guest" id="auth-guest-section">
+          <button class="btn btn-outline" onclick="app.openAuthModal('login')">
+            <i class="fa-solid fa-right-to-bracket"></i> Kirish
+          </button>
+          <button class="btn btn-primary" onclick="app.openAuthModal('register')">
+            Ro'yxatdan o'tish
+          </button>
+        </div>
+
+        <!-- Logged In User Pill -->
+        <div class="auth-user" id="auth-user-section" style="display:none;">
+          <!-- Wallet Balance Pill -->
+          <div class="wallet-pill" onclick="app.openWalletModal()" title="Hisobni to'ldirish yoki yechish">
+            <i class="fa-solid fa-wallet wallet-icon"></i>
+            <span class="wallet-amount" id="nav-user-balance">0 so'm</span>
+            <span class="wallet-add"><i class="fa-solid fa-plus"></i></span>
+          </div>
+
+          <!-- User Avatar & Dropdown -->
+          <div class="user-dropdown-container">
+            <div class="user-pill" onclick="app.toggleUserMenu()">
+              <img src="" alt="avatar" id="nav-user-avatar" class="user-avatar-img">
+              <span class="user-name" id="nav-user-name">User</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="dropdown-menu" id="user-dropdown-menu">
+              <div class="dropdown-header">
+                <p class="dropdown-user-title" id="menu-user-title">User</p>
+                <p class="dropdown-user-role" id="menu-user-role">Foydalanuvchi</p>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="javascript:void(0)" onclick="app.navigate('profile')">
+                <i class="fa-solid fa-user"></i> Mening Profilim
+              </a>
+              <a href="javascript:void(0)" onclick="app.navigate('my-listings')">
+                <i class="fa-solid fa-list-check"></i> Mening E'lonlarim
+              </a>
+              <a href="javascript:void(0)" onclick="app.navigate('deals')">
+                <i class="fa-solid fa-handshake-angle"></i> Bitimlar tarixi
+              </a>
+              <a href="javascript:void(0)" onclick="app.openWalletModal()">
+                <i class="fa-solid fa-credit-card"></i> Hamyon & Tranzaksiyalar
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="javascript:void(0)" class="text-danger" onclick="app.logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Chiqish
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile hamburger menu toggle -->
+        <button class="btn-mobile-toggle" onclick="app.toggleMobileMenu()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="main-content">
+    
+    <!-- VIEW: CATALOG (HOME) -->
+    <section id="view-catalog" class="page-view active">
+      <!-- HERO BANNER -->
+      <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fa-solid fa-bolt"></i> 24/7 ONLAYN BOZOR VA GARANT
+          </div>
+          <h1 class="hero-title">
+            FC MOBILE AKKAUNTLARINI <span class="highlight-green">XAVFSIZ SOTING</span> VA <span class="highlight-cyan">XARID QILING</span>
+          </h1>
+          <p class="hero-desc">
+            O'zbekistondagi eng ishonchli FC Mobile birjasi. 100% Garant depozit tizimi — pulingiz va akkauntingiz to'liq himoyalangan!
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn btn-hero-primary" onclick="app.scrollToCatalog()">
+              <i class="fa-solid fa-magnifying-glass"></i> Akkauntlarni Ko'rish
+            </button>
+            <button class="btn btn-hero-secondary" onclick="app.openSellModal()">
+              <i class="fa-solid fa-tag"></i> Akkauntni Sotuvga Qo'yish
+            </button>
+            <button class="btn btn-hero-outline" onclick="app.openFastTestModal()">
+              <i class="fa-solid fa-flask"></i> Sinov Profiliga Kirish
+            </button>
+          </div>
+
+          <!-- Feature badges strip -->
+          <div class="hero-features">
+            <div class="feat-card">
+              <i class="fa-solid fa-shield-virus"></i>
+              <div>
+                <h4>100% Xavfsiz Garant</h4>
+                <p>Pul akkaunt tekshirilguncha muzlatiladi</p>
+              </div>
+            </div>
+            <div class="feat-card">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <div>
+                <h4>24/7 Avtomatlashtirilgan</h4>
+                <p>Istalgan vaqtda bitim va to'lov</p>
+              </div>
+            </div>
+            <div class="feat-card">
+              <i class="fa-solid fa-bolt"></i>
+              <div>
+                <h4>Bir Zumda To'lov</h4>
+                <p>Payme, Click, Uzum orqali qulay</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER & SEARCH PANEL -->
+      <div class="catalog-container" id="catalog-anchor">
+        <div class="search-filter-box">
+          <div class="search-row">
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="filter-search" placeholder="O'yinchi ismi, OVR yoki e'lon nomi bo'yicha qidirish (masalan: Mbappe, 108, Gullit)..." oninput="app.debounceFilter()">
+              <button class="clear-search-btn" id="btn-clear-search" onclick="app.clearSearch()" style="display:none;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="sort-wrapper">
+              <label><i class="fa-solid fa-arrow-down-short-wide"></i> Saralash:</label>
+              <select id="filter-sort" onchange="app.applyFilters()">
+                <option value="newest">Eng yangi e'lonlar</option>
+                <option value="ovr_desc">OVR: Eng yuqori reyting</option>
+                <option value="price_asc">Narx: Avval arzonlari</option>
+                <option value="price_desc">Narx: Avval qimmatlari</option>
+                <option value="views">Eng ko'p ko'rilgan</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Quick OVR Chips & Type Filters -->
+          <div class="filter-chips-row">
+            <div class="filter-group">
+              <span class="filter-label">OVR Reyting:</span>
+              <div class="chips-list">
+                <button class="ovr-chip active" data-ovr="all" onclick="app.setOvrFilter('all')">Barchasi</button>
+                <button class="ovr-chip" data-ovr="125+" onclick="app.setOvrFilter('125+')">125+ OVR</button>
+                <button class="ovr-chip" data-ovr="120-124" onclick="app.setOvrFilter('120-124')">120-124 OVR</button>
+                <button class="ovr-chip" data-ovr="100-119" onclick="app.setOvrFilter('100-119')">100-119 OVR</button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <span class="filter-label">Bog'lanish turi:</span>
+              <select id="filter-binding" onchange="app.applyFilters()">
+                <option value="all">Barcha turlar</option>
+                <option value="EA Account">EA Account</option>
+                <option value="Google Play">Google Play</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Game Center">Game Center</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <span class="filter-label">Maksimal narx:</span>
+              <select id="filter-max-price" onchange="app.applyFilters()">
+                <option value="all">Cheklovsiz</option>
+                <option value="200000">200,000 so'mgacha</option>
+                <option value="500000">500,000 so'mgacha</option>
+                <option value="1000000">1,000,000 so'mgacha</option>
+              </select>
+            </div>
+
+            <button class="btn btn-reset-filter" onclick="app.resetFilters()" title="Filtrlarni tozalash">
+              <i class="fa-solid fa-rotate-right"></i> Qaytarish
+            </button>
+          </div>
+        </div>
+
+        <!-- LISTINGS GRID -->
+        <div class="catalog-header-bar">
+          <h2 class="section-title">
+            <i class="fa-solid fa-fire text-neon"></i> Sotuvdagi FC Mobile Akkauntlari 
+            <span class="results-badge" id="results-count">0 ta</span>
+          </h2>
+          <div class="safe-badge-pill">
+            <i class="fa-solid fa-lock text-green"></i> Garant depozit himoyasi yoqilgan
+          </div>
+        </div>
+
+        <div class="listings-grid" id="listings-grid-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state-card" id="listings-empty-state" style="display:none;">
+          <i class="fa-solid fa-gamepad empty-icon text-neon"></i>
+          <h3>Hozircha sotuvda akkauntlar yo'q</h3>
+          <p>Platformada faqat haqiqiy foydalanuvchilar akkaunt qo'yadi. Birinchi bo'lib o'z FC Mobile akkauntingizni sotuvga qo'ying!</p>
+          <button class="btn btn-primary btn-lg mt-3" onclick="app.openSellModal()">
+            <i class="fa-solid fa-plus-circle"></i> Akkauntni Sotuvga Qo'yish
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: HOW IT WORKS / GARANT TIZIMI -->
+    <section id="view-howitworks" class="page-view">
+      <div class="container section-padded">
+        <div class="text-center mb-5">
+          <span class="hero-badge"><i class="fa-solid fa-shield"></i> 100% BEG'UBOR XAVFSIZLIK</span>
+          <h2 class="section-headline">Garant Tizimi Qanday Ishlaydi?</h2>
+          <p class="section-sub">Bizning platformamizda hech qanday firibgarlik (skam) bo'lishi mumkin emas. Pul va akkauntlar to'liq kafolatlangan!</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <div class="step-icon-wrap"><i class="fa-solid fa-cart-shopping"></i></div>
+            <h3>Akkauntni Tanlang</h3>
+            <p>Katalogdagi istalgan FC Mobile akkauntini ko'rib chiqing va "Garant bilan Sotib Olish" tugmasini bosing.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <div class="step-icon-wrap"><i class="fa-solid fa-vault"></i></div>
+            <h3>Mablag' Garantda Muzlatiladi</h3>
+            <p>Pulingiz sotuvchiga darhol berilmaydi! U platformamizning xavfsiz Garant hisobida muzlatib turiladi.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <div class="step-icon-wrap"><i class="fa-solid fa-key"></i></div>
+            <h3>Akkaunt Topshiriladi</h3>
+            <p>Sotuvchi login va parolni xavfsiz bitim chatida taqdim etadi. Siz o'yinga kirib tarkibni, pochta va parolni o'zgartirasiz.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">04</div>
+            <div class="step-icon-wrap"><i class="fa-solid fa-circle-check"></i></div>
+            <h3>Tasdiqlash va To'lov</h3>
+            <p>Akkauntni to'liq tekshirib tasdiqlaganingizdan so'nggina Garant pulni sotuvchiga o'tkazadi. Muammo bo'lsa darhol pul qaytariladi!</p>
+          </div>
+        </div>
+
+        <div class="guarantee-banner">
+          <div class="guarantee-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="guarantee-text">
+            <h3>Nega aynan FC BAZAR?</h3>
+            <p>Telegram guruhlarida yoki begonalar bilan oldindan pul tashlab firibgarlarga aldanmang! FC BAZAR har bir bitimda hakam va kafolat vazifasini bajaradi.</p>
+          </div>
+          <button class="btn btn-neon-sell" onclick="app.navigate('catalog')">Hoziroq Boshlash</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: DEALS / BITIMLARIM -->
+    <section id="view-deals" class="page-view">
+      <div class="container section-padded">
+        <div class="page-header-flex">
+          <div>
+            <h2 class="section-headline"><i class="fa-solid fa-handshake text-neon"></i> Xavfsiz Bitimlarim</h2>
+            <p class="section-sub">Barcha xarid qilingan yoki sotilgan akkauntlar bitimlari ro'yxati</p>
+          </div>
+          <button class="btn btn-outline" onclick="app.loadDeals()">
+            <i class="fa-solid fa-arrows-rotate"></i> Yangilash
+          </button>
+        </div>
+
+        <div class="deals-tabs">
+          <button class="deal-tab active" onclick="app.filterDealsView('all')">Barchasi</button>
+          <button class="deal-tab" onclick="app.filterDealsView('active')">Jarayondagi bitimlar</button>
+          <button class="deal-tab" onclick="app.filterDealsView('completed')">Muvaffaqiyatli yakunlangan</button>
+        </div>
+
+        <div class="deals-list" id="deals-list-container">
+          <!-- Populated by app.js -->
+        </div>
+
+        <div class="empty-state-card" id="deals-empty-state" style="display:none;">
+          <i class="fa-solid fa-receipt empty-icon"></i>
+          <h3>Sizda hali bitimlar mavjud emas</h3>
+          <p>Katalogdagi akkauntlarni ko'rib chiqing yoki o'zingizning akkauntingizni sotuvga qo'ying!</p>
+          <button class="btn btn-primary" onclick="app.navigate('catalog')">Katalogni Ko'rish</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: DEAL DETAIL / BITIM XONASI (CHAT & ESCROW ROOM) -->
+    <section id="view-deal-room" class="page-view">
+      <div class="container section-padded">
+        <button class="btn btn-link mb-3" onclick="app.navigate('deals')">
+          <i class="fa-solid fa-arrow-left"></i> Barcha bitimlarga qaytish
+        </button>
+
+        <div class="deal-room-grid" id="deal-room-container">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: PROFILE / MY ACCOUNT -->
+    <section id="view-profile" class="page-view">
+      <div class="container section-padded">
+        <div class="profile-layout-grid">
+          <!-- Profile sidebar -->
+          <div class="profile-card">
+            <div class="profile-avatar-wrap">
+              <img src="" alt="avatar" id="prof-avatar" class="profile-big-avatar">
+              <span class="verified-badge-icon" id="prof-verified" title="Tasdiqlangan sotuvchi"><i class="fa-solid fa-circle-check"></i></span>
+            </div>
+            <h3 class="prof-username" id="prof-username">Username</h3>
+            <span class="prof-role-badge" id="prof-role">Foydalanuvchi</span>
+
+            <div class="prof-stats-grid">
+              <div class="pstat-item">
+                <span class="pstat-val" id="prof-rating">5.0</span>
+                <span class="pstat-lbl">Reyting ⭐</span>
+              </div>
+              <div class="pstat-item">
+                <span class="pstat-val" id="prof-deals">0</span>
+                <span class="pstat-lbl">Bitimlar</span>
+              </div>
+              <div class="pstat-item">
+                <span class="pstat-val" id="prof-reviews">0</span>
+                <span class="pstat-lbl">Sharhlar</span>
+              </div>
+            </div>
+
+            <div class="profile-contact-info">
+              <div class="info-row">
+                <i class="fa-solid fa-envelope"></i>
+                <span id="prof-email">-</span>
+              </div>
+              <div class="info-row">
+                <i class="fa-brands fa-telegram"></i>
+                <span id="prof-telegram">Ko'rsatilmagan</span>
+              </div>
+              <div class="info-row">
+                <i class="fa-solid fa-phone"></i>
+                <span id="prof-phone">Ko'rsatilmagan</span>
+              </div>
+            </div>
+
+            <button class="btn btn-outline btn-block mt-3" onclick="app.openEditProfileModal()">
+              <i class="fa-solid fa-pen-to-square"></i> Profilni tahrirlash
+            </button>
+          </div>
+
+          <!-- Balance and activity tabs -->
+          <div class="profile-main-content">
+            <!-- Balance Banner -->
+            <div class="balance-card-banner">
+              <div class="balance-info">
+                <span class="balance-label">Mavjud Balans:</span>
+                <h2 class="balance-value" id="prof-balance-amount">0 so'm</h2>
+                <p class="balance-hint">FC Bazar platformasidagi ichki hamyoningiz</p>
+              </div>
+              <div class="balance-actions">
+                <button class="btn btn-primary" onclick="app.openWalletModal('topup')">
+                  <i class="fa-solid fa-circle-plus"></i> To'ldirish
+                </button>
+                <button class="btn btn-outline" onclick="app.openWalletModal('withdraw')">
+                  <i class="fa-solid fa-money-bill-transfer"></i> Yechib olish
+                </button>
+              </div>
+            </div>
+
+            <!-- Profile Nav Tabs -->
+            <div class="profile-subtabs">
+              <button class="subtab-btn active" onclick="app.switchProfileSubtab('listings')">
+                <i class="fa-solid fa-box-open"></i> Mening E'lonlarim
+              </button>
+              <button class="subtab-btn" onclick="app.switchProfileSubtab('transactions')">
+                <i class="fa-solid fa-clock-rotate-left"></i> Tranzaksiyalar
+              </button>
+            </div>
+
+            <!-- Subtab Content: My Listings -->
+            <div id="subtab-listings" class="subtab-view active">
+              <div class="my-listings-grid" id="my-listings-container">
+                <!-- populated by app.js -->
+              </div>
+            </div>
+
+            <!-- Subtab Content: Transactions -->
+            <div id="subtab-transactions" class="subtab-view">
+              <div class="transactions-table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Sana</th>
+                      <th>Turi</th>
+                      <th>Summa</th>
+                      <th>Tavsif</th>
+                      <th>Holat</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactions-tbody">
+                    <!-- Populated by app.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN DASHBOARD -->
+    <section id="view-admin" class="page-view">
+      <div class="container section-padded">
+        <div class="page-header-flex">
+          <div>
+            <h2 class="section-headline"><i class="fa-solid fa-crown text-gold"></i> Platforma Boshqaruv Markazi</h2>
+            <p class="section-sub">Moderatsiya, bitimlar hakamligi, foydalanuvchilar va statistika</p>
+          </div>
+          <button class="btn btn-outline" onclick="app.loadAdminData()">
+            <i class="fa-solid fa-arrows-rotate"></i> Yangilash
+          </button>
+        </div>
+
+        <!-- Admin KPI Stats -->
+        <div class="kpi-grid" id="admin-kpi-container">
+          <!-- Populated by app.js -->
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs mt-4">
+          <button class="adm-tab active" onclick="app.switchAdminTab('users')">Foydalanuvchilar</button>
+          <button class="adm-tab" onclick="app.switchAdminTab('listings')">Barcha E'lonlar</button>
+          <button class="adm-tab" onclick="app.switchAdminTab('disputes')">Arbitraj & Shikoyatlar</button>
+        </div>
+
+        <div id="adm-content-users" class="adm-tab-panel active">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Foydalanuvchi</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Balans</th>
+                  <th>Bitimlar</th>
+                  <th>Tasdiqlangan</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="adm-content-listings" class="adm-tab-panel">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Akkaunt</th>
+                  <th>OVR</th>
+                  <th>Narx</th>
+                  <th>Sotuvchi</th>
+                  <th>Holat</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="admin-listings-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="adm-content-disputes" class="adm-tab-panel">
+          <div id="admin-disputes-container"></div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="logo-shield">
+          <span class="logo-fc">FC</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">FC BAZAR<span class="brand-dot">.UZ</span></span>
+          <p class="footer-desc">O'zbekistondagi 1-raqamli FC Mobile akkauntlar birjasi. 24/7 xavfsiz garant va professional qo'llab-quvvatlash.</p>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4>Bo'limlar</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="app.navigate('catalog')">Barcha Akkauntlar</a></li>
+          <li><a href="javascript:void(0)" onclick="app.openSellModal()">Akkaunt Sotish</a></li>
+          <li><a href="javascript:void(0)" onclick="app.navigate('howitworks')">Garant Qoidalari</a></li>
+          <li><a href="javascript:void(0)" onclick="app.navigate('deals')">Bitimlarim</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Xavfsizlik</h4>
+        <ul>
+          <li><span>🛡️ Escrow Garant Himoyasi</span></li>
+          <li><span>⚡ 24/7 Avtomatlashgan Tizim</span></li>
+          <li><span>🔒 100% Shaxsiy Maxfiylik</span></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Biz Bilan Aloqa</h4>
+        <p><i class="fa-brands fa-telegram"></i> Telegram: @FCBazar_Admin</p>
+        <p><i class="fa-solid fa-clock"></i> Ish tartibi: 24/7 uzluksiz</p>
+        <button class="btn btn-outline btn-sm mt-2" onclick="app.openFastTestModal()">
+          <i class="fa-solid fa-key"></i> Test akkauntlar
+        </button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 FC BAZAR. Barcha huquqlar himoyalangan. EA Sports FC Mobile o'yini bilan rasmiy aloqador emas — mustaqil savdo birjasi.</p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- AUTH MODAL (LOGIN / REGISTER) -->
+  <div class="modal-overlay" id="modal-auth">
+    <div class="modal-box modal-auth-box">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-auth')">&times;</button>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-login" onclick="app.switchAuthTab('login')">Kirish</button>
+        <button class="auth-tab-btn" id="tab-register" onclick="app.switchAuthTab('register')">Ro'yxatdan O'tish</button>
+      </div>
+
+      <!-- Quick Demo Login Bar -->
+      <div class="quick-demo-accounts">
+        <span class="quick-demo-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Tezkor test kirish:</span>
+        <div class="quick-demo-buttons">
+          <button class="btn-demo-chip" onclick="app.demoLogin('sotuvchi@fc.uz', '123456')">
+            <i class="fa-solid fa-store"></i> Sotuvchi (Jasur)
+          </button>
+          <button class="btn-demo-chip" onclick="app.demoLogin('xaridor@fc.uz', '123456')">
+            <i class="fa-solid fa-wallet"></i> Xaridor (Sardor - 1.5M balans)
+          </button>
+          <button class="btn-demo-chip" onclick="app.demoLogin('admin@fc.uz', 'admin123')">
+            <i class="fa-solid fa-crown text-gold"></i> Admin (Garant)
+          </button>
+        </div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" onsubmit="app.handleLogin(event)">
+        <div class="form-group">
+          <label>Email yoki Foydalanuvchi nomi</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="login-identifier" required placeholder="Masalan: sardor_gamer yoki xaridor@fc.uz">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Parol</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="login-password" required placeholder="Parolni kiriting">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-login">
+          Kirish
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" style="display:none;" onsubmit="app.handleRegister(event)">
+        <div class="form-group">
+          <label>Foydalanuvchi nomi (Nickname)</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="reg-username" required placeholder="kamida 3 belgi, masalan: fc_lion">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Elektron pochta (Email)</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="reg-email" required placeholder="email@gmail.com">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Telegram username</label>
+            <div class="input-icon-wrap">
+              <i class="fa-brands fa-telegram"></i>
+              <input type="text" id="reg-telegram" placeholder="@username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Telefon raqam</label>
+            <div class="input-icon-wrap">
+              <i class="fa-solid fa-phone"></i>
+              <input type="text" id="reg-phone" placeholder="+998 90 123 45 67">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Parol yarating</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="reg-password" required placeholder="Kamida 6 ta belgi">
+          </div>
+        </div>
+        <div class="welcome-bonus-banner">
+          <i class="fa-solid fa-gift text-neon"></i>
+          <span>Ro'yxatdan o'tganingizda <b>100,000 so'm</b> sinov balansi sovg'a qilinadi!</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-register">
+          Ro'yxatdan O'tish
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- SELL ACCOUNT (CREATE LISTING) MODAL -->
+  <div class="modal-overlay" id="modal-sell">
+    <div class="modal-box modal-lg">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-sell')">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-plus-circle text-neon"></i> FC Mobile Akkauntini Sotuvga Qo'yish</h3>
+        <p class="modal-sub">E'loningiz darhol 24/7 katalogda ko'rinadi va xaridorlar sotib olishi mumkin bo'ladi</p>
+      </div>
+
+      <form id="form-sell-account" onsubmit="app.handleCreateListing(event)">
+        <div class="form-group">
+          <label>E'lon sarlavhasi *</label>
+          <input type="text" id="sell-title" required placeholder="Masalan: 106 OVR Beast Squad | Gullit + R9 + 150M tanga" class="input-lg">
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>OVR Reyting * (Istalgan OVR)</label>
+            <input type="number" id="sell-ovr" required placeholder="Istalgan OVR (masalan: 127)">
+          </div>
+          <div class="form-group">
+            <label>Sotish Narxi (so'mda) * (Istalgan summa)</label>
+            <input type="number" id="sell-price" required placeholder="Istalgan summa (masalan: 250000)">
+          </div>
+          <div class="form-group">
+            <label>Jamoa Qiymati (Team Value)</label>
+            <input type="text" id="sell-team-value" placeholder="Masalan: 156B Tanga">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Erkin Tangalar (Coins)</label>
+            <input type="text" id="sell-coins" placeholder="Masalan: 45,000,000">
+          </div>
+          <div class="form-group">
+            <label>Gemlar (Gems)</label>
+            <input type="text" id="sell-gems" placeholder="Masalan: 12,500">
+          </div>
+          <div class="form-group">
+            <label>FC Points</label>
+            <input type="text" id="sell-fc-points" placeholder="Masalan: 1,000">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label>Bog'lanish turi (Binding) *</label>
+            <select id="sell-binding" required>
+              <option value="EA Account">EA Account (Eng xavfsiz)</option>
+              <option value="Google Play">Google Play</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Game Center">Game Center (iOS)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>O'yin Taktikasi (Formation)</label>
+            <select id="sell-formation">
+              <option value="4-3-3 Attack">4-3-3 Attack</option>
+              <option value="4-3-3 Holding">4-3-3 Holding</option>
+              <option value="4-1-2-1-2 Narrow">4-1-2-1-2 Narrow</option>
+              <option value="4-2-4 Attack">4-2-4 Attack</option>
+              <option value="3-5-2 Defense">3-5-2 Defense</option>
+              <option value="4-4-2 Flat">4-4-2 Flat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Akkaunt Darajasi (Level)</label>
+            <input type="number" id="sell-level" placeholder="Daraja (masalan: 35)">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Asosiy O'yinchilar (Vergul bilan ajrating)</label>
+          <input type="text" id="sell-top-players" placeholder="Mbappé (127), Pirlo (126), Maldini (125), Raúl (126)...">
+        </div>
+
+        <div class="form-group">
+          <label>Batafsil Tavsif</label>
+          <textarea id="sell-desc" rows="3" placeholder="Akkaunt holati, tarkibdagi o'yinchilar, ranglar haqida ma'lumot bering..."></textarea>
+        </div>
+
+        <!-- Screenshots / Images Upload -->
+        <div class="form-group">
+          <label>Skrinshotlar / Rasmlar (Faqat sizning haqiqiy o'yindagi rasmingiz)</label>
+          <div class="image-upload-zone" onclick="document.getElementById('sell-file-input').click()">
+            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+            <p>O'yindagi haqiqiy skrinshotni yuklang (16:9 format tavsiya etiladi)</p>
+            <span class="upload-hint">Faqat tizimga kirgan sotuvchi o'z rasmini yuklaydi (Ixtiyoriy)</span>
+            <input type="file" id="sell-file-input" multiple accept="image/*" style="display:none;" onchange="app.handleImageSelection(event)">
+          </div>
+          <div class="uploaded-previews" id="sell-uploaded-previews"></div>
+        </div>
+
+        <!-- Hidden credentials field -->
+        <div class="credentials-secure-box">
+          <div class="box-head">
+            <i class="fa-solid fa-lock text-gold"></i>
+            <span>Akkaunt Login va Paroli (Maxfiy saqlanadi)</span>
+          </div>
+          <p class="box-desc">Ushbu ma'lumotlar ochiq e'londa ko'rinmaydi! Xaridor pul to'lab, Garantda muzlatilgandagina xavfsiz taqdim etiladi.</p>
+          <textarea id="sell-credentials" rows="2" placeholder="Masalan: EA Pochta: myacc@ea.com | Parol: secret123"></textarea>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-sell')">Bekor qilish</button>
+          <button type="submit" class="btn btn-neon-sell btn-lg" id="btn-submit-listing">
+            <i class="fa-solid fa-check"></i> E'lonni Chop Etish
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ACCOUNT DETAILS MODAL -->
+  <div class="modal-overlay" id="modal-details">
+    <div class="modal-box modal-lg" id="modal-details-content">
+      <!-- Populated dynamically by app.js -->
+    </div>
+  </div>
+
+  <!-- WALLET / TOPUP MODAL -->
+  <div class="modal-overlay" id="modal-wallet">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-wallet')">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-wallet text-neon"></i> Hamyon & Balans</h3>
+        <p class="modal-sub">Hisobingizni bir zumda to'ldiring yoki kartaga yechib oling</p>
+      </div>
+
+      <div class="wallet-balance-display">
+        <span class="wbal-sub">Joriy Balansingiz:</span>
+        <h2 class="wbal-num" id="modal-wallet-amount">0 so'm</h2>
+      </div>
+
+      <div class="wallet-action-tabs">
+        <button class="wtab active" id="wtab-topup" onclick="app.switchWalletTab('topup')">
+          <i class="fa-solid fa-plus-circle"></i> Hisobni To'ldirish
+        </button>
+        <button class="wtab" id="wtab-withdraw" onclick="app.switchWalletTab('withdraw')">
+          <i class="fa-solid fa-money-bill-transfer"></i> Kartaga Yechish
+        </button>
+      </div>
+
+      <!-- Topup Form -->
+      <form id="form-topup" onsubmit="app.handleTopup(event)">
+        <div class="payment-methods-grid">
+          <label class="pay-method-card active">
+            <input type="radio" name="topup-provider" value="Payme" checked>
+            <span class="pay-name text-cyan">Payme</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="topup-provider" value="Click">
+            <span class="pay-name text-blue">Click</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="topup-provider" value="Uzum Bank">
+            <span class="pay-name text-purple">Uzum</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="topup-provider" value="Tezkor Sinov">
+            <span class="pay-name text-green">1-Klik Test</span>
+          </label>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>To'ldirish summasi (so'm)</label>
+          <input type="number" id="topup-amount" min="1000" step="5000" placeholder="Masalan: 350000" required value="300000" class="input-lg">
+        </div>
+
+        <div class="quick-sum-chips">
+          <button type="button" class="sum-chip" onclick="app.setTopupAmount(100000)">100,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTopupAmount(300000)">300,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTopupAmount(500000)">500,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTopupAmount(1000000)">1,000,000</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt-3" id="btn-submit-topup">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Hisobni To'ldirish
+        </button>
+      </form>
+
+      <!-- Withdraw Form -->
+      <form id="form-withdraw" style="display:none;" onsubmit="app.handleWithdraw(event)">
+        <div class="form-group">
+          <label>Karta raqami (Uzcard / Humo)</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-credit-card"></i>
+            <input type="text" id="withdraw-card" placeholder="8600 **** **** 1234" maxlength="19" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Karta egasining ismi</label>
+          <input type="text" id="withdraw-holder" placeholder="ALIYEV VALI" required>
+        </div>
+
+        <div class="form-group">
+          <label>Yechib olinadigan summa (so'm)</label>
+          <input type="number" id="withdraw-amount" min="10000" placeholder="100000" required>
+        </div>
+
+        <p class="text-hint"><i class="fa-solid fa-info-circle"></i> Mablag' 5-15 daqiqa ichida kartangizga o'tkaziladi.</p>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-withdraw">
+          Kartaga Yechib Olish
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="modal-edit-profile">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-edit-profile')">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-user-pen text-neon"></i> Profilni Tahrirlash</h3>
+      </div>
+      <form onsubmit="app.handleUpdateProfile(event)">
+        <div class="form-group">
+          <label>Telefon raqam</label>
+          <input type="text" id="edit-phone" placeholder="+998 90 123 45 67">
+        </div>
+        <div class="form-group">
+          <label>Telegram username</label>
+          <input type="text" id="edit-telegram" placeholder="@username">
+        </div>
+        <div class="form-group">
+          <label>Avatar rasmi URL</label>
+          <input type="text" id="edit-avatar" placeholder="https://...">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          Saqlash
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
