@@ -1,7 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, 'database.json');
+const LOCAL_DB_PATH = path.join(__dirname, 'database.json');
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DB_PATH = IS_SERVERLESS ? path.join('/tmp', 'database.json') : LOCAL_DB_PATH;
+
+if (IS_SERVERLESS && !fs.existsSync(DB_PATH) && fs.existsSync(LOCAL_DB_PATH)) {
+  try {
+    fs.copyFileSync(LOCAL_DB_PATH, DB_PATH);
+  } catch (e) {
+    console.error('Failed copying database to /tmp:', e);
+  }
+}
 
 // Default initial state
 const defaultData = {
