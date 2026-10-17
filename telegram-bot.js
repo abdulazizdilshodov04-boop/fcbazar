@@ -244,12 +244,26 @@ async function handleUpdate(update) {
     const userName = msg.from.first_name || msg.from.username || 'Foydalanuvchi';
 
     if (text.startsWith('/start') || text.startsWith('/sayt')) {
-      await callApi('sendMessage', {
+      const siteUrl = getSiteUrl();
+      const photoUrl = `${siteUrl}/assets/logo.jpg`;
+
+      const photoRes = await callApi('sendPhoto', {
         chat_id: chatId,
-        text: getWelcomeText(userName),
+        photo: photoUrl,
+        caption: getWelcomeText(userName),
         parse_mode: 'HTML',
         reply_markup: buildKeyboard()
       });
+
+      if (!photoRes.ok) {
+        // Fallback to text message if photo fails
+        await callApi('sendMessage', {
+          chat_id: chatId,
+          text: getWelcomeText(userName),
+          parse_mode: 'HTML',
+          reply_markup: buildKeyboard()
+        });
+      }
       return;
     }
 
