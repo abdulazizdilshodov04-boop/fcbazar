@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /uploads/
 
-Sitemap: https://spreading-lexmark-guns-itself.trycloudflare.com/sitemap.xml
+Sitemap: https://fcbazar.onrender.com/sitemap.xml
