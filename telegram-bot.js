@@ -40,13 +40,17 @@ try {
   console.error('DB load error in bot:', e);
 }
 
-// Telegram API request helper
+// In-memory cache for Telegram logo file_id to eliminate external download lag
+let cachedLogoFileId = null;
+
+// Telegram API request helper with timeout protection
 async function callApi(method, data = {}) {
   try {
     const res = await fetch(`${TELEGRAM_API}/${method}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined
     });
     return await res.json();
   } catch (err) {
@@ -191,6 +195,70 @@ function getSupportKeyboard() {
   return { inline_keyboard: buttons };
 }
 
+// Submenu keyboard with quick return to main menu or support
+function buildSubKeyboard() {
+  const siteUrl = getSiteUrl();
+  const isHttps = siteUrl.startsWith('https://');
+  const buttons = [];
+
+  if (isHttps) {
+    buttons.push([
+      { text: '🚀 FC Bazarni ochish (Web App)', web_app: { url: siteUrl } }
+    ]);
+  } else {
+    buttons.push([
+      { text: '🌐 Saytga kirish', url: siteUrl }
+    ]);
+  }
+
+  buttons.push([
+    { text: '📞 Admin & Qo\'llab-quvvatlash', callback_data: 'support' },
+    { text: '⬅️ Asosiy menyu', callback_data: 'refresh' }
+  ]);
+
+  return { inline_keyboard: buttons };
+}
+
+// Universal message updater: works for both photo messages (caption) and text messages
+async function updateBotMessage(cq, text, replyMarkup) {
+  if (!cq || !cq.message) return;
+  const chatId = cq.message.chat.id;
+  const messageId = cq.message.message_id;
+  const isPhoto = Boolean(cq.message.photo && cq.message.photo.length > 0);
+
+  // If the message has a photo, edit caption
+  if (isPhoto) {
+    const capRes = await callApi('editMessageCaption', {
+      chat_id: chatId,
+      message_id: messageId,
+      caption: text,
+      parse_mode: 'HTML',
+      reply_markup: replyMarkup
+    });
+    if (capRes.ok) return capRes;
+  }
+
+  // Otherwise try editing message text
+  const textRes = await callApi('editMessageText', {
+    chat_id: chatId,
+    message_id: messageId,
+    text: text,
+    parse_mode: 'HTML',
+    reply_markup: replyMarkup
+  });
+
+  // If both failed, send fresh message so the user ALWAYS gets the response
+  if (!textRes.ok) {
+    return await callApi('sendMessage', {
+      chat_id: chatId,
+      text: text,
+      parse_mode: 'HTML',
+      reply_markup: replyMarkup
+    });
+  }
+  return textRes;
+}
+
 function escapeHtml(text) {
   if (!text) return '';
   return String(text)
@@ -245,17 +313,19 @@ async function handleUpdate(update) {
 
     if (text.startsWith('/start') || text.startsWith('/sayt')) {
       const siteUrl = getSiteUrl();
-      const photoUrl = `${siteUrl}/assets/logo.jpg`;
+      const photoPayload = cachedLogoFileId || `${siteUrl}/assets/logo.jpg`;
 
       const photoRes = await callApi('sendPhoto', {
         chat_id: chatId,
-        photo: photoUrl,
+        photo: photoPayload,
         caption: getWelcomeText(userName),
         parse_mode: 'HTML',
         reply_markup: buildKeyboard()
       });
 
-      if (!photoRes.ok) {
+      if (photoRes.ok && photoRes.result && photoRes.result.photo && photoRes.result.photo.length > 0) {
+        cachedLogoFileId = photoRes.result.photo[photoRes.result.photo.length - 1].file_id;
+      } else if (!photoRes.ok) {
         // Fallback to text message if photo fails
         await callApi('sendMessage', {
           chat_id: chatId,
@@ -272,7 +342,7 @@ async function handleUpdate(update) {
         chat_id: chatId,
         text: getGarantText(),
         parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
+        reply_markup: buildSubKeyboard()
       });
       return;
     }
@@ -282,7 +352,7 @@ async function handleUpdate(update) {
         chat_id: chatId,
         text: getStatsText(),
         parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
+        reply_markup: buildSubKeyboard()
       });
       return;
     }
@@ -306,46 +376,38 @@ async function handleUpdate(update) {
     });
   } else if (update.callback_query) {
     const cq = update.callback_query;
-    const chatId = cq.message.chat.id;
-    const messageId = cq.message.message_id;
     const data = cq.data;
 
-    await callApi('answerCallbackQuery', { callback_query_id: cq.id });
+    // Acknowledge immediately to stop loading indicator on client
+    callApi('answerCallbackQuery', { callback_query_id: cq.id }).catch(() => {});
 
     if (data === 'garant') {
-      await callApi('editMessageText', {
-        chat_id: chatId,
-        message_id: messageId,
-        text: getGarantText(),
-        parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
-      });
+      await updateBotMessage(cq, getGarantText(), buildSubKeyboard());
     } else if (data === 'stats') {
-      await callApi('editMessageText', {
-        chat_id: chatId,
-        message_id: messageId,
-        text: getStatsText(),
-        parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
-      });
+      await updateBotMessage(cq, getStatsText(), buildSubKeyboard());
     } else if (data === 'support') {
-      await callApi('editMessageText', {
-        chat_id: chatId,
-        message_id: messageId,
-        text: getSupportText(),
-        parse_mode: 'HTML',
-        reply_markup: getSupportKeyboard()
-      });
+      await updateBotMessage(cq, getSupportText(), getSupportKeyboard());
     } else if (data === 'refresh') {
-      await callApi('editMessageText', {
-        chat_id: chatId,
-        message_id: messageId,
-        text: getWelcomeText(cq.from.first_name || 'Foydalanuvchi'),
-        parse_mode: 'HTML',
-        reply_markup: buildKeyboard()
-      });
+      const userName = cq.from.first_name || cq.from.username || 'Foydalanuvchi';
+      await updateBotMessage(cq, getWelcomeText(userName), buildKeyboard());
     }
   }
+}
+
+// Keep-Alive to prevent Render free instance from hibernating
+let keepAliveTimer = null;
+function startKeepAlive() {
+  if (keepAliveTimer) return;
+  keepAliveTimer = setInterval(async () => {
+    try {
+      const siteUrl = getSiteUrl();
+      if (siteUrl && siteUrl.startsWith('https://')) {
+        await fetch(`${siteUrl}/api/health`, {
+          signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined
+        });
+      }
+    } catch (e) {}
+  }, 8 * 60 * 1000); // Har 8 daqiqada
 }
 
 // Long polling loop
@@ -365,24 +427,28 @@ async function startPolling() {
 
   console.log(`✅ Telegram Bot ulandi: @${me.result.username} (${me.result.first_name})`);
   await setupBotConfig();
+  startKeepAlive();
 
   let offset = 0;
   while (isRunning) {
     try {
-      const res = await fetch(`${TELEGRAM_API}/getUpdates?offset=${offset}&timeout=25`);
+      const res = await fetch(`${TELEGRAM_API}/getUpdates?offset=${offset}&timeout=25`, {
+        signal: AbortSignal.timeout ? AbortSignal.timeout(35000) : undefined
+      });
       const data = await res.json();
 
       if (data.ok && Array.isArray(data.result)) {
         for (const update of data.result) {
           offset = update.update_id + 1;
-          await handleUpdate(update);
+          // Asynchronous parallel processing - no blocking between requests!
+          handleUpdate(update).catch(err => console.error('Bot update xatoligi:', err.message));
         }
       } else {
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 1000));
       }
     } catch (err) {
       console.warn('Bot polling uzilishi (qayta ulanmoqda...):', err.message);
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, 2000));
     }
   }
 }

@@ -74,6 +74,9 @@
           <i class="fa-solid fa-handshake"></i> Bitimlarim
           <span class="badge-counter" id="active-deals-count" style="display:none;">0</span>
         </button>
+        <button class="nav-link" onclick="app.openModal('modal-support')" id="nav-btn-support">
+          <i class="fa-solid fa-headset"></i> Yordam
+        </button>
         <button class="nav-link admin-only" onclick="app.navigate('admin')" id="nav-btn-admin" style="display:none;">
           <i class="fa-solid fa-crown text-gold"></i> Admin Panel
         </button>
@@ -129,6 +132,9 @@
               </a>
               <a href="javascript:void(0)" onclick="app.openWalletModal()">
                 <i class="fa-solid fa-credit-card"></i> Hamyon & Tranzaksiyalar
+              </a>
+              <a href="javascript:void(0)" onclick="app.openModal('modal-support')">
+                <i class="fa-solid fa-headset"></i> Qo'llab-quvvatlash
               </a>
               <div class="dropdown-divider"></div>
               <a href="javascript:void(0)" class="text-danger" onclick="app.logout()">
@@ -951,6 +957,54 @@
       </form>
     </div>
   </div>
+
+  <!-- SUPPORT MODAL (QO'LLAB-QUVVATLASH) -->
+  <div class="modal-overlay" id="modal-support">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-support')">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-headset text-neon"></i> Admin & Qo'llab-quvvatlash</h3>
+      </div>
+      <div style="text-align: center; padding: 10px 0 20px;">
+        <div style="width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--fc-green); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--fc-green);">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;">FC BAZAR Rasmiy Qo'llab-quvvatlash</h4>
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px;">
+          Bitimlar, Garant xizmati, hisob to'ldirish yoki arbitraj bo'yicha savollaringiz bo'lsa, platforma adminiga 24/7 murojaat qilishingiz mumkin.
+        </p>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; text-align: left; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-user-shield text-gold"></i> Bosh Garant:</span>
+            <span style="font-weight: 600; color: #fff;">@abdulazizdilshodov</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-clock text-neon"></i> Ish tartibi:</span>
+            <span style="font-weight: 600; color: var(--fc-green);">24/7 Kun-u tun</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-brands fa-telegram text-primary"></i> Rasmiy Bot:</span>
+            <span style="font-weight: 600; color: #fff;">@fcmobil27_bot</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="https://t.me/abdulazizdilshodov" target="_blank" class="btn btn-primary btn-block btn-lg" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fa-brands fa-telegram" style="font-size: 1.3rem;"></i> Telegramda Adminga Yozish
+          </a>
+          <a href="https://t.me/fcmobil27_bot" target="_blank" class="btn btn-outline btn-block" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-solid fa-robot"></i> Telegram Botni Ochish
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING SUPPORT BUTTON -->
+  <button class="btn-floating-support" onclick="app.openModal('modal-support')" title="Admin & Qo'llab-quvvatlash (24/7)">
+    <i class="fa-solid fa-headset"></i>
+  </button>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast-container" class="toast-container"></div>

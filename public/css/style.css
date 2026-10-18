@@ -2346,3 +2346,30 @@ input:focus, select:focus, textarea:focus {
 .page-view.active {
   display: block;
 }
+
+/* Floating Support Button */
+.btn-floating-support {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--fc-green), #00b359);
+  color: #0b131e;
+  border: none;
+  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
+  z-index: 990;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-floating-support:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 30px rgba(0, 255, 136, 0.65);
+}
+
