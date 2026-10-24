@@ -182,7 +182,7 @@ const app = {
 
       this.updateAuthUI();
       this.closeModal('modal-auth');
-      this.showToast(`Ro'yxatdan o'tdingiz! Sizga 100,000 so'm start bonusi berildi 🎉`, 'success');
+      this.showToast("Muvaffaqiyatli ro'yxatdan o'tdingiz! Xush kelibsiz 🎉", 'success');
       this.loadListings();
     } catch (err) {
       this.showToast(err.message, 'error');

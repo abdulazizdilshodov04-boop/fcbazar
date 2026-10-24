@@ -47,7 +47,6 @@ router.post('/register', async (req, res) => {
                     cleanEmail.includes('abdulaziz') ||
                     (telegram && telegram.toLowerCase().includes('abdulazizdilshodov'));
     const userRole = isAdmin ? 'admin' : 'user';
-    const initialBalance = isAdmin ? 1500000 : 100000;
 
     const newUser = db.createUser({
       username: cleanUsername,
@@ -56,23 +55,12 @@ router.post('/register', async (req, res) => {
       phone: phone || '',
       telegram: telegram || '',
       role: userRole,
-      balance: initialBalance,
+      balance: 0,
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanUsername)}`,
       rating: 5.0,
       reviewCount: 0,
       dealsCompleted: 0,
       isVerified: true
-    });
-
-    // Record welcome bonus transaction
-    db.createTransaction({
-      userId: newUser.id,
-      type: 'topup',
-      amount: initialBalance,
-      balanceAfter: initialBalance,
-      description: isAdmin ? 'Boshqaruvchi (Admin) hisob balansi' : 'Xush kelibsiz bonusi (Sayt sinovi uchun sovg\'a)',
-      status: 'completed',
-      provider: 'Bonus / Start'
     });
 
     const token = jwt.sign({ id: newUser.id, username: newUser.username, role: newUser.role }, JWT_SECRET, {
