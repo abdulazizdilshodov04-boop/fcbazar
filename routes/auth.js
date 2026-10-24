@@ -22,23 +22,42 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.' });
     }
 
-    // Check existing
-    const existing = db.getUserByEmailOrUsername(email) || db.getUserByEmailOrUsername(username);
-    if (existing) {
-      return res.status(400).json({ error: 'Bunday email yoki foydalanuvchi nomi allaqachon ro\'yxatdan o\'tgan.' });
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim();
+
+    // Check existing email specifically
+    const existingEmail = db.getUsers().find(u => (u.email || '').toLowerCase() === cleanEmail);
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Ushbu elektron pochta (email) allaqachon ro\'yxatdan o\'tgan. Iltimos, "Kirish" bo\'limidan kiring.' });
+    }
+
+    // Check existing username specifically
+    const existingUsername = db.getUsers().find(u => (u.username || '').toLowerCase() === cleanUsername.toLowerCase());
+    if (existingUsername) {
+      return res.status(400).json({ error: `"${cleanUsername}" foydalanuvchi nomi allaqachon band. Iltimos, boshqa nom tanlang yoki "Kirish" qiling.` });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Auto admin for Abdulaziz or first user
+    const allUsers = db.getUsers();
+    const isFirstUser = allUsers.length === 0;
+    const isAdmin = isFirstUser || 
+                    cleanUsername.toLowerCase() === 'abdulaziz' || 
+                    cleanEmail.includes('abdulaziz') ||
+                    (telegram && telegram.toLowerCase().includes('abdulazizdilshodov'));
+    const userRole = isAdmin ? 'admin' : 'user';
+    const initialBalance = isAdmin ? 1500000 : 100000;
+
     const newUser = db.createUser({
-      username: username.trim(),
-      email: email.trim().toLowerCase(),
+      username: cleanUsername,
+      email: cleanEmail,
       password: hashedPassword,
       phone: phone || '',
       telegram: telegram || '',
-      role: 'user',
-      balance: 100000, // 100,000 UZS welcome gift balance for testing/convenience!
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`,
+      role: userRole,
+      balance: initialBalance,
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanUsername)}`,
       rating: 5.0,
       reviewCount: 0,
       dealsCompleted: 0,
@@ -49,9 +68,9 @@ router.post('/register', async (req, res) => {
     db.createTransaction({
       userId: newUser.id,
       type: 'topup',
-      amount: 100000,
-      balanceAfter: 100000,
-      description: 'Xush kelibsiz bonusi (Sayt sinovi uchun sovg\'a)',
+      amount: initialBalance,
+      balanceAfter: initialBalance,
+      description: isAdmin ? 'Boshqaruvchi (Admin) hisob balansi' : 'Xush kelibsiz bonusi (Sayt sinovi uchun sovg\'a)',
       status: 'completed',
       provider: 'Bonus / Start'
     });

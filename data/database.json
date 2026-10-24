@@ -1,37 +1,7 @@
 {
-  "users": [
-    {
-      "id": "u_1792243956568_s92a8g",
-      "username": "Abdulaziz",
-      "email": "abdulaziz.akromov7777@gmail.com",
-      "password": "$2b$10$Zi0u4sI5YJZjq3SxGvXW6uIl736RNybvgRAnMLEOELl/LKx.v.ehO",
-      "phone": "+998 98 300 90 80",
-      "telegram": "@abdulazizdilshodov",
-      "role": "admin",
-      "balance": 1800000,
-      "frozenBalance": 0,
-      "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Abdulaziz",
-      "rating": 5,
-      "reviewCount": 0,
-      "dealsCompleted": 0,
-      "isVerified": true,
-      "createdAt": "2026-10-17T13:32:36.568Z"
-    }
-  ],
+  "users": [],
   "listings": [],
   "deals": [],
-  "transactions": [
-    {
-      "id": "tx_1792833760178_asvz34",
-      "userId": "u_1792243956568_s92a8g",
-      "type": "topup",
-      "amount": 300000,
-      "balanceAfter": 1800000,
-      "description": "Kartadan to'ldirildi: 8600 **** **** 3333 (ABDULAZIZ AKROMOV) via Bank Kartasi",
-      "status": "completed",
-      "provider": "Bank Kartasi",
-      "createdAt": "2026-10-24T09:22:40.179Z"
-    }
-  ],
+  "transactions": [],
   "reviews": []
 }
