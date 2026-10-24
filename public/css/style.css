@@ -252,6 +252,26 @@ button, input, select, textarea {
   gap: 14px;
 }
 
+.auth-guest {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-guest .btn {
+  height: 42px;
+  min-height: 42px;
+  min-width: 140px;
+  padding: 0 18px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
 /* ==================== BUTTONS ==================== */
 .btn {
   display: inline-flex;
@@ -1882,17 +1902,27 @@ button, input, select, textarea {
   position: absolute;
   top: 18px;
   right: 20px;
-  background: none;
-  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
   color: var(--text-muted);
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  transition: var(--transition-fast);
+  transition: all var(--transition-fast);
+  z-index: 10;
 }
 
 .modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .modal-header {
@@ -1912,12 +1942,6 @@ button, input, select, textarea {
 }
 
 /* Auth Tabs & Demo */
-.auth-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
 .auth-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;

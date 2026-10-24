@@ -13,10 +13,10 @@ router.get('/transactions', requireAuth, (req, res) => {
   }
 });
 
-// Top up balance (Payme / Click / Uzum / Test Fast Pay)
+// Top up balance (Card / Payme / Click / Uzum)
 router.post('/topup', requireAuth, (req, res) => {
   try {
-    const { amount, method } = req.body;
+    const { amount, method, cardNumber, cardExpiry, cardHolder } = req.body || {};
     const cleanAmount = String(amount || '').replace(/[\s,\.]/g, '');
     const topupAmount = parseInt(cleanAmount, 10);
 
@@ -28,26 +28,45 @@ router.post('/topup', requireAuth, (req, res) => {
       return res.status(400).json({ error: 'Maksimal bir martalik to\'ldirish 50,000,000 so\'m' });
     }
 
+    // Card validation if provided
+    const cleanCard = String(cardNumber || '').replace(/[\s-]/g, '');
+    if (cleanCard && (cleanCard.length < 16 || cleanCard.length > 19 || !/^\d+$/.test(cleanCard))) {
+      return res.status(400).json({ error: 'Karta raqami 16 xonali raqamlardan iborat bo\'lishi kerak (masalan: 8600...)' });
+    }
+
     const user = db.getUserById(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
     }
 
+    const maskedCard = cleanCard && cleanCard.length >= 16 
+      ? `${cleanCard.substring(0, 4)} **** **** ${cleanCard.substring(cleanCard.length - 4)}` 
+      : null;
+
     const newBalance = (user.balance || 0) + topupAmount;
     db.updateUser(user.id, { balance: newBalance });
+
+    const selectedMethod = method || (maskedCard ? 'Bank Kartasi' : 'Payme');
+    const txDescription = maskedCard 
+      ? `Kartadan to'ldirildi: ${maskedCard}${cardHolder ? ' (' + cardHolder.toUpperCase() + ')' : ''} via ${selectedMethod}`
+      : `Hisob to'ldirildi (${selectedMethod})`;
 
     const tx = db.createTransaction({
       userId: user.id,
       type: 'topup',
       amount: topupAmount,
       balanceAfter: newBalance,
-      description: `Hisob to'ldirildi (${method || 'Payme / Click'})`,
+      description: txDescription,
       status: 'completed',
-      provider: method || 'Payme'
+      provider: selectedMethod
     });
 
+    const successMsg = maskedCard
+      ? `Kartangizdan (${maskedCard}) ${topupAmount.toLocaleString()} so'm muvaffaqiyatli yechildi va hisobingiz to'ldirildi!`
+      : `Hisobingizga ${topupAmount.toLocaleString()} so'm muvaffaqiyatli o'tkazildi!`;
+
     res.json({
-      message: `Hisobingizga ${topupAmount.toLocaleString()} so'm muvaffaqiyatli o'tkazildi!`,
+      message: successMsg,
       newBalance,
       transaction: tx
     });
@@ -60,7 +79,7 @@ router.post('/topup', requireAuth, (req, res) => {
 // Transfer money to another user (P2P Transfer)
 router.post('/transfer', requireAuth, (req, res) => {
   try {
-    const { recipient, amount } = req.body;
+    const { recipient, amount } = req.body || {};
     const cleanAmount = String(amount || '').replace(/[\s,\.]/g, '');
     const transferAmount = parseInt(cleanAmount, 10);
 
@@ -134,7 +153,7 @@ router.post('/transfer', requireAuth, (req, res) => {
 // Request withdrawal
 router.post('/withdraw', requireAuth, (req, res) => {
   try {
-    const { amount, cardNumber, cardHolder } = req.body;
+    const { amount, cardNumber, cardHolder } = req.body || {};
     const cleanAmount = String(amount || '').replace(/[\s,\.]/g, '');
     const withdrawAmount = parseInt(cleanAmount, 10);
 

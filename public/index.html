@@ -179,8 +179,8 @@
             <button class="btn btn-hero-secondary" onclick="app.openSellModal()">
               <i class="fa-solid fa-tag"></i> Akkauntni Sotuvga Qo'yish
             </button>
-            <button class="btn btn-hero-outline" onclick="app.openFastTestModal()">
-              <i class="fa-solid fa-flask"></i> Sinov Profiliga Kirish
+            <button class="btn btn-hero-outline" onclick="app.navigate('howitworks')">
+              <i class="fa-solid fa-shield-halved"></i> Garant Qoidalari
             </button>
           </div>
 
@@ -609,9 +609,6 @@
         <h4>Biz Bilan Aloqa</h4>
         <p><i class="fa-brands fa-telegram"></i> Telegram: <a href="https://t.me/abdulazizdilshodov" target="_blank" style="color: var(--fc-green); text-decoration: none;">@abdulazizdilshodov</a></p>
         <p><i class="fa-solid fa-clock"></i> Ish tartibi: 24/7 uzluksiz</p>
-        <button class="btn btn-outline btn-sm mt-2" onclick="app.openFastTestModal()">
-          <i class="fa-solid fa-key"></i> Test akkauntlar
-        </button>
       </div>
     </div>
     <div class="footer-bottom">
@@ -626,25 +623,14 @@
     <div class="modal-box modal-auth-box">
       <button class="modal-close-btn" onclick="app.closeModal('modal-auth')">&times;</button>
       
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-user-shield text-neon"></i> FC BAZAR</h3>
+        <p class="modal-sub">Hisobingizga kiring yoki yangi profil ro'yxatdan o'tkazing</p>
+      </div>
+
       <div class="auth-tabs">
         <button class="auth-tab-btn active" id="tab-login" onclick="app.switchAuthTab('login')">Kirish</button>
         <button class="auth-tab-btn" id="tab-register" onclick="app.switchAuthTab('register')">Ro'yxatdan O'tish</button>
-      </div>
-
-      <!-- Quick Demo Login Bar -->
-      <div class="quick-demo-accounts">
-        <span class="quick-demo-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Tezkor test kirish:</span>
-        <div class="quick-demo-buttons">
-          <button class="btn-demo-chip" onclick="app.demoLogin('sotuvchi@fc.uz', '123456')">
-            <i class="fa-solid fa-store"></i> Sotuvchi (Jasur)
-          </button>
-          <button class="btn-demo-chip" onclick="app.demoLogin('xaridor@fc.uz', '123456')">
-            <i class="fa-solid fa-wallet"></i> Xaridor (Sardor - 1.5M balans)
-          </button>
-          <button class="btn-demo-chip" onclick="app.demoLogin('admin@fc.uz', 'admin123')">
-            <i class="fa-solid fa-crown text-gold"></i> Admin (Garant)
-          </button>
-        </div>
       </div>
 
       <!-- LOGIN FORM -->
@@ -653,7 +639,7 @@
           <label>Email yoki Foydalanuvchi nomi</label>
           <div class="input-icon-wrap">
             <i class="fa-solid fa-user"></i>
-            <input type="text" id="login-identifier" required placeholder="Masalan: sardor_gamer yoki xaridor@fc.uz">
+            <input type="text" id="login-identifier" required placeholder="Masalan: abdulaziz yoki email@gmail.com">
           </div>
         </div>
         <div class="form-group">
@@ -870,7 +856,11 @@
       <form id="form-topup" onsubmit="app.handleTopup(event)">
         <div class="payment-methods-grid">
           <label class="pay-method-card active">
-            <input type="radio" name="topup-provider" value="Payme" checked>
+            <input type="radio" name="topup-provider" value="Bank Kartasi" checked>
+            <span class="pay-name text-green"><i class="fa-solid fa-credit-card"></i> Karta</span>
+          </label>
+          <label class="pay-method-card">
+            <input type="radio" name="topup-provider" value="Payme">
             <span class="pay-name text-cyan">Payme</span>
           </label>
           <label class="pay-method-card">
@@ -881,26 +871,52 @@
             <input type="radio" name="topup-provider" value="Uzum Bank">
             <span class="pay-name text-purple">Uzum</span>
           </label>
-          <label class="pay-method-card">
-            <input type="radio" name="topup-provider" value="Tezkor Sinov">
-            <span class="pay-name text-green">1-Klik Test</span>
-          </label>
+        </div>
+
+        <div class="card-details-box mt-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px;">
+          <div class="form-group">
+            <label><i class="fa-solid fa-credit-card text-neon"></i> Bank karta raqami (Uzcard / Humo / Visa) *</label>
+            <div class="input-icon-wrap">
+              <i class="fa-solid fa-credit-card"></i>
+              <input type="text" id="topup-card-number" placeholder="8600 0000 0000 0000" maxlength="19" required oninput="app.formatCardNumber(this)">
+            </div>
+          </div>
+
+          <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Amal qilish muddati *</label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-calendar-days"></i>
+                <input type="text" id="topup-card-expiry" placeholder="12/28" maxlength="5" required oninput="app.formatCardExpiry(this)">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Karta egasi (Ism Familiya)</label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="topup-card-holder" placeholder="ABDULAZIZ AKROMOV" style="text-transform: uppercase;">
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-group mt-3">
-          <label>To'ldirish summasi (so'm)</label>
-          <input type="number" id="topup-amount" min="1000" step="5000" placeholder="Masalan: 350000" required value="300000" class="input-lg">
+          <label>To'ldirish summasi (so'm) *</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-coins text-gold"></i>
+            <input type="number" id="topup-amount" min="1000" step="5000" placeholder="Masalan: 300000" required value="300000" class="input-lg">
+          </div>
         </div>
 
         <div class="quick-sum-chips">
+          <button type="button" class="sum-chip" onclick="app.setTopupAmount(50000)">50,000</button>
           <button type="button" class="sum-chip" onclick="app.setTopupAmount(100000)">100,000</button>
           <button type="button" class="sum-chip" onclick="app.setTopupAmount(300000)">300,000</button>
           <button type="button" class="sum-chip" onclick="app.setTopupAmount(500000)">500,000</button>
-          <button type="button" class="sum-chip" onclick="app.setTopupAmount(1000000)">1,000,000</button>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg mt-3" id="btn-submit-topup">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Hisobni To'ldirish
+          <i class="fa-solid fa-credit-card"></i> Kartadan Hisobni To'ldirish
         </button>
       </form>
 
@@ -942,7 +958,7 @@
           <label>Karta raqami (Uzcard / Humo)</label>
           <div class="input-icon-wrap">
             <i class="fa-solid fa-credit-card"></i>
-            <input type="text" id="withdraw-card" placeholder="8600 **** **** 1234" maxlength="19" required>
+            <input type="text" id="withdraw-card" placeholder="8600 0000 0000 0000" maxlength="19" required oninput="app.formatCardNumber(this)">
           </div>
         </div>
 

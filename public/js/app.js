@@ -1161,6 +1161,23 @@ const app = {
     }
   },
 
+  formatCardNumber(input) {
+    if (!input) return;
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    input.value = formatted;
+  },
+
+  formatCardExpiry(input) {
+    if (!input) return;
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 3) {
+      input.value = val.substring(0, 2) + '/' + val.substring(2);
+    } else {
+      input.value = val;
+    }
+  },
+
   setTopupAmount(amt) {
     document.getElementById('topup-amount').value = amt;
   },
@@ -1171,9 +1188,30 @@ const app = {
 
   async handleTopup(e) {
     e.preventDefault();
+    const cardNumInput = document.getElementById('topup-card-number');
+    const cardExpiryInput = document.getElementById('topup-card-expiry');
+    const cardHolderInput = document.getElementById('topup-card-holder');
+
+    const cardNumber = cardNumInput ? cardNumInput.value.trim() : '';
+    const cardExpiry = cardExpiryInput ? cardExpiryInput.value.trim() : '';
+    const cardHolder = cardHolderInput ? cardHolderInput.value.trim() : '';
+
+    const cleanCard = cardNumber.replace(/[\s-]/g, '');
+    if (!cleanCard || cleanCard.length < 16) {
+      this.showToast('Iltimos, 16 xonali bank karta raqamini to\'liq kiriting', 'error');
+      cardNumInput?.focus();
+      return;
+    }
+
+    if (!cardExpiry || cardExpiry.length < 4) {
+      this.showToast('Iltimos, kartaning amal qilish muddatini kiriting (MM/YY)', 'error');
+      cardExpiryInput?.focus();
+      return;
+    }
+
     const rawVal = document.getElementById('topup-amount').value;
     const amount = parseInt(String(rawVal || '').replace(/[\s,\.]/g, ''), 10);
-    const provider = document.querySelector('input[name="topup-provider"]:checked')?.value || 'Payme';
+    const provider = document.querySelector('input[name="topup-provider"]:checked')?.value || 'Bank Kartasi';
     const btn = document.getElementById('btn-submit-topup');
 
     if (isNaN(amount) || amount < 1000) {
@@ -1183,9 +1221,9 @@ const app = {
 
     try {
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> To\'lov amalga oshirilmoqda...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kartadan to\'lov olinmoqda...';
 
-      const res = await API.wallet.topup(amount, provider);
+      const res = await API.wallet.topup(amount, provider, cardNumber, cardExpiry, cardHolder);
       this.state.user.balance = res.newBalance;
       API.setUser(this.state.user);
 
@@ -1200,7 +1238,7 @@ const app = {
       this.showToast(err.message, 'error');
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> Hisobni To\'ldirish';
+      btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Kartadan Hisobni To\'ldirish';
     }
   },
 
@@ -1502,7 +1540,9 @@ const app = {
           <td>${u.dealsCompleted || 0}</td>
           <td>${u.isVerified ? '<span class="text-neon">✓ Ha</span>' : '<span class="text-muted">Yo\'q</span>'}</td>
           <td>
-            <button class="btn btn-outline btn-sm" onclick="app.adminAddBalance('${u.id}', 100000)">+100k test</button>
+            <button class="btn btn-outline btn-sm" onclick="app.adminPromptBalance('${u.id}', '${u.username}')">
+              <i class="fa-solid fa-coins"></i> Balans berish
+            </button>
           </td>
         </tr>
       `).join('');
@@ -1511,13 +1551,17 @@ const app = {
     }
   },
 
-  async adminAddBalance(userId, delta) {
+  async adminPromptBalance(userId, username) {
+    const sumStr = prompt(`@${username} foydalanuvchisiga qancha balans qo'shmoqchisiz (so'm)?`, "50000");
+    if (!sumStr) return;
+    const delta = parseInt(sumStr.replace(/[\s,\.]/g, ''), 10);
+    if (isNaN(delta) || delta === 0) return;
     try {
       await API.admin.updateUser(userId, { balanceDelta: delta });
-      this.showToast('Balans yangilandi!', 'success');
+      this.showToast(`@${username} hisobiga ${delta.toLocaleString()} so'm qo'shildi!`, 'success');
       this.loadAdminUsers();
-    } catch (e) {
-      this.showToast('Xatolik', 'error');
+    } catch (err) {
+      this.showToast(err.message, 'error');
     }
   },
 

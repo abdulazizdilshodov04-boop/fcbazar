@@ -180,10 +180,10 @@ const API = {
 
   // Wallet endpoints
   wallet: {
-    topup: (amount, method) =>
+    topup: (amount, method, cardNumber, cardExpiry, cardHolder) =>
       API.request('/wallet/topup', {
         method: 'POST',
-        body: JSON.stringify({ amount, method })
+        body: JSON.stringify({ amount, method, cardNumber, cardExpiry, cardHolder })
       }),
 
     transfer: (recipient, amount) =>
