@@ -5,10 +5,32 @@ const jwt = require('jsonwebtoken');
 const db = require('../data/db');
 const { JWT_SECRET, requireAuth } = require('../middleware/auth');
 
+function getDefaultKahootAvatar(username) {
+  const emojis = ['🦁', '🤖', '👑', '⚡', '🥷', '🔥', '🎮', '🐯', '🐲', '👾', '🦈', '🚀', '🏆', '👻', '🐺', '💎'];
+  const colors = [
+    ['#FF416C', '#FF4B2B'],
+    ['#4A00E0', '#8E2DE2'],
+    ['#00C9FF', '#92FE9D'],
+    ['#f857a6', '#ff5858'],
+    ['#11998e', '#38ef7d'],
+    ['#FC466B', '#3F5EFB'],
+    ['#F37335', '#FDC830'],
+    ['#0052D4', '#4364F7']
+  ];
+  let seed = 0;
+  for (let i = 0; i < (username || 'user').length; i++) {
+    seed += username.charCodeAt(i);
+  }
+  const emoji = emojis[seed % emojis.length];
+  const [c1, c2] = colors[seed % colors.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120"><defs><linearGradient id="kg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="36" fill="url(#kg)"/><circle cx="60" cy="60" r="46" fill="#ffffff" fill-opacity="0.16"/><text x="60" y="74" font-size="54" text-anchor="middle" font-family="'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif">${emoji}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, phone, telegram } = req.body;
+    const { username, email, password, phone, telegram, avatar } = req.body;
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'Foydalanuvchi nomi, email va parol kiritilishi shart.' });
@@ -56,7 +78,7 @@ router.post('/register', async (req, res) => {
       telegram: telegram || '',
       role: userRole,
       balance: 0,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanUsername)}`,
+      avatar: avatar || getDefaultKahootAvatar(cleanUsername),
       rating: 5.0,
       reviewCount: 0,
       dealsCompleted: 0,

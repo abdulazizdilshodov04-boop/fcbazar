@@ -398,11 +398,15 @@
         <div class="profile-layout-grid">
           <!-- Profile sidebar -->
           <div class="profile-card">
-            <div class="profile-avatar-wrap">
+            <div class="profile-avatar-wrap" onclick="app.openAvatarPickerModal()" title="Kahoot smaylikni o'zgartirish uchun bosing" style="cursor: pointer;">
               <img src="" alt="avatar" id="prof-avatar" class="profile-big-avatar">
+              <span class="avatar-edit-overlay" title="Smaylikni o'zgartirish"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
               <span class="verified-badge-icon" id="prof-verified" title="Tasdiqlangan sotuvchi"><i class="fa-solid fa-circle-check"></i></span>
             </div>
-            <h3 class="prof-username" id="prof-username">Username</h3>
+            <button class="btn btn-sm btn-outline mt-2 btn-kahoot-trigger" onclick="app.openAvatarPickerModal()" style="border-radius: 20px; font-size: 0.82rem; border-color: rgba(0, 255, 136, 0.35); background: rgba(0, 255, 136, 0.05); color: #fff;">
+              <i class="fa-solid fa-masks-theater text-neon"></i> Kahoot Smaylikni Tanlash
+            </button>
+            <h3 class="prof-username mt-2" id="prof-username">Username</h3>
             <span class="prof-role-badge" id="prof-role">Foydalanuvchi</span>
 
             <div class="prof-stats-grid">
@@ -696,6 +700,14 @@
             <i class="fa-solid fa-lock"></i>
             <input type="password" id="reg-password" required placeholder="Kamida 6 ta belgi">
           </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            <span><i class="fa-solid fa-masks-theater text-neon"></i> O'z Kahoot Smaylikingizni tanlang:</span>
+            <span class="text-neon" id="reg-selected-avatar-name" style="font-size:0.82rem; font-weight:700;">🦁 Arslon Qirol</span>
+          </label>
+          <input type="hidden" id="reg-avatar" value="">
+          <div class="kahoot-avatar-picker-grid" id="reg-avatar-grid"></div>
         </div>
         <div class="welcome-security-banner" style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #8b9bb4; display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
           <i class="fa-solid fa-credit-card text-neon" style="font-size: 1.1rem; flex-shrink: 0;"></i>
@@ -1030,8 +1042,12 @@
           <input type="text" id="edit-telegram" placeholder="@username">
         </div>
         <div class="form-group">
-          <label>Avatar rasmi URL</label>
-          <input type="text" id="edit-avatar" placeholder="https://...">
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            <span><i class="fa-solid fa-masks-theater text-neon"></i> Kahoot Smaylikingiz:</span>
+            <span class="text-neon" id="edit-selected-avatar-name" style="font-size:0.82rem; font-weight:700;">🦁 Arslon Qirol</span>
+          </label>
+          <input type="hidden" id="edit-avatar" value="">
+          <div class="kahoot-avatar-picker-grid" id="edit-avatar-grid"></div>
         </div>
         <div class="form-group">
           <label>Pul tushadigan karta (Uzcard / Humo)</label>
@@ -1045,6 +1061,34 @@
           Saqlash
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- DEDICATED KAHOOT AVATAR PICKER MODAL -->
+  <div class="modal-overlay" id="modal-avatar-picker">
+    <div class="modal-box modal-lg">
+      <button class="modal-close-btn" onclick="app.closeModal('modal-avatar-picker')">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-masks-theater text-neon"></i> Kahoot Smaylikingizni Tanlang</h3>
+        <p class="modal-sub">O'zingizga yoqqan qahramon / smaylikni tanlang — u profilingiz, e'lonlaringiz va barcha bitimlarda ko'rinadi</p>
+      </div>
+
+      <div class="kahoot-preview-strip" id="kahoot-preview-strip">
+        <img src="" id="kahoot-chosen-preview-img" class="kahoot-chosen-img" alt="avatar preview">
+        <div class="kahoot-chosen-info">
+          <span class="kahoot-chosen-badge">Tanlangan smaylik:</span>
+          <h4 id="kahoot-chosen-name" class="kahoot-chosen-name">Arslon Qirol</h4>
+          <p class="kahoot-chosen-sub">Barcha sahifalarda sizni ushbu yorqin smaylik ifodalaydi</p>
+        </div>
+      </div>
+
+      <div class="kahoot-avatar-picker-grid full-grid mt-3" id="standalone-avatar-grid"></div>
+
+      <div class="modal-footer-actions mt-4">
+        <button type="button" class="btn btn-primary btn-block btn-lg" onclick="app.saveStandaloneAvatar()" id="btn-save-standalone-avatar">
+          <i class="fa-solid fa-circle-check"></i> Ushbu Smaylikni O'rnatish
+        </button>
+      </div>
     </div>
   </div>
 

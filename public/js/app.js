@@ -2,6 +2,40 @@
  * FC BAZAR — Main Frontend Application Logic
  */
 
+const KAHOOT_AVATARS = [
+  { id: 'lion', emoji: '🦁', name: 'Arslon Qirol', c1: '#FF416C', c2: '#FF4B2B' },
+  { id: 'robot', emoji: '🤖', name: 'Kiber Robot', c1: '#4A00E0', c2: '#8E2DE2' },
+  { id: 'king', emoji: '👑', name: 'Afsona Toj', c1: '#F37335', c2: '#FDC830' },
+  { id: 'lightning', emoji: '⚡', name: 'Tezkor Chaqmoq', c1: '#00C9FF', c2: '#92FE9D' },
+  { id: 'ninja', emoji: '🥷', name: 'Yashirin Ninja', c1: '#232526', c2: '#414345' },
+  { id: 'fire', emoji: '🔥', name: 'Olov Hujumchi', c1: '#f12711', c2: '#f5af19' },
+  { id: 'gamepad', emoji: '🎮', name: 'Pro Geymer', c1: '#7F00FF', c2: '#E100FF' },
+  { id: 'tiger', emoji: '🐯', name: 'Yirtqich Yo\'lbars', c1: '#FF512F', c2: '#DD2476' },
+  { id: 'dragon', emoji: '🐲', name: 'Olovli Ajdaho', c1: '#11998e', c2: '#38ef7d' },
+  { id: 'alien', emoji: '👾', name: 'Kosmik Monstr', c1: '#B224EF', c2: '#7579FF' },
+  { id: 'shark', emoji: '🦈', name: 'Hujumchi Akula', c1: '#0575E6', c2: '#00F260' },
+  { id: 'rocket', emoji: '🚀', name: 'Kosmik Raketa', c1: '#FC466B', c2: '#3F5EFB' },
+  { id: 'trophy', emoji: '🏆', name: 'Oltin Kubok', c1: '#f5af19', c2: '#e65c00' },
+  { id: 'ghost', emoji: '👻', name: 'Sehrli Sharpa', c1: '#654ea3', c2: '#eaafc8' },
+  { id: 'wolf', emoji: '🐺', name: 'Qutb Bo\'risi', c1: '#3023AE', c2: '#C86DD7' },
+  { id: 'panda', emoji: '🐼', name: 'Panda Usta', c1: '#1D976C', c2: '#93F9B9' },
+  { id: 'diamond', emoji: '💎', name: 'Qimmat Olmos', c1: '#0052D4', c2: '#4364F7' },
+  { id: 'skull', emoji: '💀', name: 'Qora Kalla', c1: '#141E30', c2: '#243B55' },
+  { id: 'wizard', emoji: '🧙', name: 'Sirli Sehrgar', c1: '#4776E6', c2: '#8E54E9' },
+  { id: 'soccer', emoji: '⚽', name: 'Futbol Qiroli', c1: '#00b09b', c2: '#96c93d' },
+  { id: 'star', emoji: '⭐', name: 'Super Yulduz', c1: '#FDC830', c2: '#F37335' },
+  { id: 'shades', emoji: '🕶️', name: 'Mafioz Ko\'zoynak', c1: '#1f4037', c2: '#99f2c8' },
+  { id: 'fox', emoji: '🦊', name: 'Epchil Tulki', c1: '#ff4e50', c2: '#f9d423' },
+  { id: 'crown_hero', emoji: '🦹', name: 'Super Qahramon', c1: '#8A2387', c2: '#E94057' }
+];
+
+function buildKahootAvatarSvg(emoji, c1, c2, id = 'av') {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120"><defs><linearGradient id="kg_${id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="36" fill="url(#kg_${id})"/><circle cx="60" cy="60" r="46" fill="#ffffff" fill-opacity="0.16"/><circle cx="60" cy="60" r="30" fill="#ffffff" fill-opacity="0.08"/><text x="60" y="75" font-size="52" text-anchor="middle" font-family="'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif">${emoji}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+const DEFAULT_AVATAR_SVG = buildKahootAvatarSvg('🦁', '#FF416C', '#FF4B2B', 'default');
+
 const app = {
   state: {
     user: null,
@@ -9,6 +43,7 @@ const app = {
     deals: [],
     currentDeal: null,
     activeView: 'catalog',
+    selectedStandaloneAvatar: null,
     filters: {
       query: '',
       minOvr: null,
@@ -50,6 +85,7 @@ const app = {
       }
     }
 
+    this.renderKahootPickers();
     this.updateAuthUI();
     this.loadListings();
 
@@ -60,6 +96,127 @@ const app = {
       this.openDealRoom(dealId);
     } else if (['howitworks', 'deals', 'profile', 'admin'].includes(hash)) {
       this.navigate(hash);
+    }
+  },
+
+  // ==================== KAHOOT AVATAR METHODS ====================
+  getDefaultAvatar() {
+    return DEFAULT_AVATAR_SVG;
+  },
+
+  buildKahootSvg(avatar) {
+    return buildKahootAvatarSvg(avatar.emoji, avatar.c1, avatar.c2, avatar.id);
+  },
+
+  renderKahootPickers() {
+    const regContainer = document.getElementById('reg-avatar-grid');
+    const editContainer = document.getElementById('edit-avatar-grid');
+    const standaloneContainer = document.getElementById('standalone-avatar-grid');
+
+    const renderItems = (context) => {
+      return KAHOOT_AVATARS.map((av, idx) => {
+        const svg = this.buildKahootSvg(av);
+        return `
+          <div class="kahoot-avatar-item ${idx === 0 ? 'active' : ''}" 
+               data-id="${av.id}" 
+               data-context="${context}"
+               onclick="app.selectKahootAvatar('${context}', '${av.id}')"
+               title="${av.name}">
+            <img src="${svg}" alt="${av.name}">
+            <span class="kahoot-avatar-name-label">${av.name}</span>
+          </div>
+        `;
+      }).join('');
+    };
+
+    if (regContainer) {
+      regContainer.innerHTML = renderItems('reg');
+      const hiddenReg = document.getElementById('reg-avatar');
+      if (hiddenReg && !hiddenReg.value) {
+        hiddenReg.value = this.buildKahootSvg(KAHOOT_AVATARS[0]);
+      }
+    }
+    if (editContainer) {
+      editContainer.innerHTML = renderItems('edit');
+    }
+    if (standaloneContainer) {
+      standaloneContainer.innerHTML = renderItems('standalone');
+    }
+  },
+
+  selectKahootAvatar(context, avatarId) {
+    const avatar = KAHOOT_AVATARS.find(a => a.id === avatarId) || KAHOOT_AVATARS[0];
+    const svg = this.buildKahootSvg(avatar);
+
+    const container = document.getElementById(`${context}-avatar-grid`) || (context === 'standalone' ? document.getElementById('standalone-avatar-grid') : null);
+    if (container) {
+      container.querySelectorAll('.kahoot-avatar-item').forEach(el => {
+        if (el.getAttribute('data-id') === avatarId) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+    }
+
+    if (context === 'reg') {
+      const hidden = document.getElementById('reg-avatar');
+      if (hidden) hidden.value = svg;
+      const nameEl = document.getElementById('reg-selected-avatar-name');
+      if (nameEl) nameEl.textContent = `${avatar.emoji} ${avatar.name}`;
+    } else if (context === 'edit') {
+      const hidden = document.getElementById('edit-avatar');
+      if (hidden) hidden.value = svg;
+      const nameEl = document.getElementById('edit-selected-avatar-name');
+      if (nameEl) nameEl.textContent = `${avatar.emoji} ${avatar.name}`;
+    } else if (context === 'standalone') {
+      this.state.selectedStandaloneAvatar = { avatar, svg };
+      const previewImg = document.getElementById('kahoot-chosen-preview-img');
+      const previewName = document.getElementById('kahoot-chosen-name');
+      if (previewImg) previewImg.src = svg;
+      if (previewName) previewName.textContent = `${avatar.emoji} ${avatar.name}`;
+    }
+  },
+
+  openAvatarPickerModal() {
+    if (!this.requireLoginPrompt()) return;
+    const currentAvatar = this.state.user?.avatar || '';
+    let matched = KAHOOT_AVATARS.find(a => {
+      return currentAvatar.includes(encodeURIComponent(a.emoji)) || currentAvatar.includes(a.emoji);
+    }) || KAHOOT_AVATARS[0];
+
+    this.selectKahootAvatar('standalone', matched.id);
+    this.openModal('modal-avatar-picker');
+  },
+
+  async saveStandaloneAvatar() {
+    if (!this.state.selectedStandaloneAvatar) return;
+    const { avatar, svg } = this.state.selectedStandaloneAvatar;
+    const btn = document.getElementById('btn-save-standalone-avatar');
+
+    try {
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> O\'rnatilmoqda...';
+      }
+
+      const res = await API.auth.updateProfile({ avatar: svg });
+      this.state.user = res.user;
+      API.setUser(res.user);
+      this.updateAuthUI();
+      this.closeModal('modal-avatar-picker');
+      this.showToast(`Kahoot smaylikingiz o'rnatildi: ${avatar.emoji} ${avatar.name}! 🎉`, 'success');
+
+      if (this.state.activeView === 'profile') {
+        this.loadProfile();
+      }
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Ushbu Smaylikni O\'rnatish';
+      }
     }
   },
 
@@ -79,7 +236,7 @@ const app = {
       userSection.style.display = 'flex';
 
       navBalance.textContent = (this.state.user.balance || 0).toLocaleString() + " so'm";
-      navAvatar.src = this.state.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+      navAvatar.src = this.state.user.avatar || DEFAULT_AVATAR_SVG;
       navName.textContent = this.state.user.username;
 
       menuTitle.textContent = this.state.user.username;
@@ -169,13 +326,14 @@ const app = {
     const telegram = document.getElementById('reg-telegram').value.trim();
     const phone = document.getElementById('reg-phone').value.trim();
     const password = document.getElementById('reg-password').value;
+    const avatar = document.getElementById('reg-avatar')?.value || '';
     const btn = document.getElementById('btn-submit-register');
 
     try {
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ro\'yxatdan o\'tkazilmoqda...';
 
-      const res = await API.auth.register({ username, email, telegram, phone, password });
+      const res = await API.auth.register({ username, email, telegram, phone, password, avatar });
       API.setToken(res.token);
       API.setUser(res.user);
       this.state.user = res.user;
@@ -385,7 +543,7 @@ const app = {
 
             <div class="fc-card-footer">
               <div class="seller-brief">
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" class="seller-mini-avatar">
+                <img src="${item.sellerAvatar || DEFAULT_AVATAR_SVG}" class="seller-mini-avatar">
                 <div>
                   <span class="seller-mini-name">@${item.sellerName || 'Sotuvchi'}</span>
                   <div class="seller-mini-rating">
@@ -593,7 +751,7 @@ const app = {
 
           <div style="display:flex; align-items:center; justify-content:space-between; background:#162032; padding:16px; border-radius:12px;">
             <div style="display:flex; align-items:center; gap:12px;">
-              <img src="${seller?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:1px solid #00ff87;">
+              <img src="${seller?.avatar || DEFAULT_AVATAR_SVG}" style="width:46px; height:46px; border-radius:14px; object-fit:cover; border:1px solid #00ff87;">
               <div>
                 <h5 style="margin:0; font-size:0.95rem;">@${seller?.username || item.sellerName} <i class="fa-solid fa-circle-check text-neon" title="Tasdiqlangan"></i></h5>
                 <span style="font-size:0.8rem; color:#8b9bb4;">⭐ ${seller?.rating || '5.0'} (${seller?.dealsCompleted || '0'} ta muvaffaqiyatli savdo)</span>
@@ -1534,7 +1692,7 @@ const app = {
       this.state.user = res.user;
       API.setUser(res.user);
 
-      document.getElementById('prof-avatar').src = this.state.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+      document.getElementById('prof-avatar').src = this.state.user.avatar || DEFAULT_AVATAR_SVG;
       document.getElementById('prof-username').textContent = this.state.user.username;
       document.getElementById('prof-role').textContent = this.state.user.role === 'admin' ? '🛡️ Admin' : 'Sotuvchi & Xaridor';
       document.getElementById('prof-rating').textContent = this.state.user.rating || '5.0';
@@ -1657,7 +1815,7 @@ const app = {
   openEditProfileModal() {
     document.getElementById('edit-phone').value = this.state.user.phone || '';
     document.getElementById('edit-telegram').value = this.state.user.telegram || '';
-    document.getElementById('edit-avatar').value = this.state.user.avatar || '';
+    
     const cardInput = document.getElementById('edit-card-number');
     const holderInput = document.getElementById('edit-card-holder');
     if (cardInput) {
@@ -1666,6 +1824,13 @@ const app = {
     if (holderInput) {
       holderInput.value = (this.state.user.payoutCardHolder || this.state.user.username || '').toUpperCase();
     }
+
+    const currentAvatar = this.state.user.avatar || '';
+    let matched = KAHOOT_AVATARS.find(a => {
+      return currentAvatar.includes(encodeURIComponent(a.emoji)) || currentAvatar.includes(a.emoji);
+    }) || KAHOOT_AVATARS[0];
+    this.selectKahootAvatar('edit', matched.id);
+
     this.openModal('modal-edit-profile');
   },
 
@@ -1673,7 +1838,7 @@ const app = {
     e.preventDefault();
     const phone = document.getElementById('edit-phone').value.trim();
     const telegram = document.getElementById('edit-telegram').value.trim();
-    const avatar = document.getElementById('edit-avatar').value.trim();
+    const avatar = document.getElementById('edit-avatar')?.value || this.state.user.avatar || '';
     const rawCard = (document.getElementById('edit-card-number')?.value || '').replace(/[\s-]/g, '');
     const cardHolder = (document.getElementById('edit-card-holder')?.value || '').trim();
 

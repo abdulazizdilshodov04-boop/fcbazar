@@ -10,7 +10,7 @@
       "role": "admin",
       "balance": 0,
       "frozenBalance": 0,
-      "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Abdulaziz",
+      "avatar": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22kg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23FF416C%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23FF4B2B%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2236%22%20fill%3D%22url(%23kg)%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2246%22%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.16%22%2F%3E%3Ctext%20x%3D%2260%22%20y%3D%2274%22%20font-size%3D%2254%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%3E%F0%9F%A6%81%3C%2Ftext%3E%3C%2Fsvg%3E",
       "rating": 5,
       "reviewCount": 2,
       "dealsCompleted": 1,
@@ -27,9 +27,9 @@
       "phone": "+998 98 300 90 80",
       "telegram": "@abdulazizdilshodov",
       "role": "admin",
-      "balance": 0,
+      "balance": 43111,
       "frozenBalance": 0,
-      "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Umar",
+      "avatar": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22kg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23F37335%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23FDC830%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2236%22%20fill%3D%22url(%23kg)%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2246%22%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.16%22%2F%3E%3Ctext%20x%3D%2260%22%20y%3D%2274%22%20font-size%3D%2254%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%3E%F0%9F%91%91%3C%2Ftext%3E%3C%2Fsvg%3E",
       "rating": 5,
       "reviewCount": 0,
       "dealsCompleted": 1,
@@ -64,7 +64,7 @@
       "payoutCard": "9987100049613595",
       "payoutCardHolder": "ABDULAZIZ",
       "status": "active",
-      "views": 1,
+      "views": 2,
       "isFeatured": false,
       "createdAt": "2026-10-24T10:35:10.691Z"
     },
@@ -123,7 +123,7 @@
       "sellerRating": 5,
       "sellerPhone": "+998 98 300 90 80",
       "sellerTelegram": "@abdulazizdilshodov",
-      "status": "pending_escrow",
+      "status": "active",
       "views": 1,
       "isFeatured": false,
       "createdAt": "2026-10-24T09:42:08.619Z"
@@ -287,7 +287,7 @@
       "buyerName": "Umar",
       "sellerId": "u_1792834831487_5o8y3v",
       "sellerName": "Abdulaziz",
-      "status": "dispute",
+      "status": "cancelled",
       "credentialsProvided": "Ma'lumotlar bitim vaqtida taqdim etiladi",
       "messages": [
         {
@@ -312,13 +312,32 @@
           "text": "⚠️ DIQQAT! Foydalanuvchi @Umar shikoyat yubordi: \"scam\". Bitim muzlatildi, platforma moderatori aralashmoqda.",
           "isCredential": false,
           "timestamp": "2026-10-24T10:17:52.806Z"
+        },
+        {
+          "id": "msg_1792839829003",
+          "sender": "admin",
+          "senderName": "Platforma Bosh Hakami",
+          "text": "⚖️ HAKAMLIK QARORI: Bitim bekor qilindi va mablag' xaridor balansiga to'liq qaytarildi. Sabab: scam qilinmasin",
+          "isCredential": false,
+          "timestamp": "2026-10-24T11:03:49.003Z"
         }
       ],
       "createdAt": "2026-10-24T09:47:58.300Z",
-      "updatedAt": "2026-10-24T10:17:52.806Z"
+      "updatedAt": "2026-10-24T11:03:49.003Z"
     }
   ],
   "transactions": [
+    {
+      "id": "tx_1792839828990_f8acp5",
+      "userId": "u_1792835263776_bei109",
+      "type": "escrow_refund",
+      "amount": 43111,
+      "balanceAfter": 43111,
+      "description": "Garant hakamligi: pul xaridorga qaytarildi (Bitim #deal_179)",
+      "status": "completed",
+      "provider": "Admin Qarori",
+      "createdAt": "2026-10-24T11:03:48.993Z"
+    },
     {
       "id": "tx_1792838147808_a9nbmr",
       "userId": "u_1792835263776_bei109",
