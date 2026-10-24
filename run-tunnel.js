@@ -40,8 +40,12 @@ function startTunnel() {
         console.log(`🤖 Telegram Botga yangi havola avtomatik biriktirilmoqda...`);
         console.log('======================================================\n');
         
-        telegramBot.updateSiteUrl(publicUrl);
-      }
+        const currentUrl = telegramBot.getSiteUrl();
+        if (currentUrl && currentUrl.includes('onrender.com') && !process.argv.includes('--force')) {
+          console.log(`ℹ️ [Himoya]: Doimiy Render.com manzili (${currentUrl}) saqlab qolindi. Telegram bot o'zgartirilmadi.`);
+        } else {
+          telegramBot.updateSiteUrl(publicUrl);
+        }
     }
   }
 
