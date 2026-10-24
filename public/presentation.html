@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FC BAZAR — 2 Daqiqalik Rasmiy Taqdimot (Pitch Deck)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #00ff87;
+      --primary-glow: rgba(0, 255, 135, 0.4);
+      --accent: #60efff;
+      --gold: #ffd700;
+      --bg: #070b12;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Ambient animated background */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(0, 255, 135, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(96, 239, 255, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, var(--bg) 100%);
+    }
+
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+    }
+
+    /* Header controls */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 36px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(7, 11, 18, 0.7);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .timer-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      box-shadow: 0 0 15px rgba(0, 255, 135, 0.2);
+    }
+
+    .timer-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #00c662);
+      color: #070b12;
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(0, 255, 135, 0.5);
+      color: #000;
+    }
+
+    /* Main Slides Container */
+    main {
+      flex: 1;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1240px;
+      opacity: 0;
+      transform: scale(0.96) translateY(20px);
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: all;
+    }
+
+    .slide-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+    }
+
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary);
+      background: rgba(0, 255, 135, 0.1);
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid rgba(0, 255, 135, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .slide-title {
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 60%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-title span {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-desc {
+      font-size: 1.18rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(0, 255, 135, 0.15);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .feature-icon.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .feature-icon.gold {
+      background: rgba(255, 215, 0, 0.15);
+      color: var(--gold);
+    }
+
+    /* Media Visual Side */
+    .visual-wrapper {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      background: #000;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .visual-wrapper:hover img {
+      transform: scale(1.03);
+    }
+
+    .stats-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--primary);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Teleprompter / Speaker Notes Bar */
+    .teleprompter {
+      position: relative;
+      z-index: 10;
+      background: rgba(10, 15, 26, 0.95);
+      border-top: 1px solid var(--border);
+      padding: 16px 40px;
+      backdrop-filter: blur(15px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .prompter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .prompter-text {
+      font-size: 1.18rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 20px;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Footer Navigation */
+    footer {
+      position: relative;
+      z-index: 10;
+      padding: 12px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 11, 18, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--primary);
+      width: 32px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .nav-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Hotkey hint */
+    .hotkey-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    kbd {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg"></div>
+  <div class="grid-lines"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+      <span>FC BAZAR</span>
+      <span class="brand-badge">Pitch Deck</span>
+    </div>
+
+    <!-- Timer (120 seconds countdown) -->
+    <div class="timer-container" title="2 Daqiqalik taqdimot vaqti">
+      <div class="timer-pulse" id="timerPulse"></div>
+      <i class="fa-regular fa-clock" style="font-size: 1rem;"></i>
+      <span id="timerDisplay">02:00</span>
+      <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 4px;">/ 120s</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn" id="btnTogglePrompter" onclick="togglePrompter()">
+        <i class="fa-solid fa-microphone-lines"></i>
+        <span>Nutq matni (Teleprompter)</span>
+      </button>
+      <button class="btn btn-primary" id="btnAutoPlay" onclick="toggleAutoPlay()">
+        <i class="fa-solid fa-play" id="playIcon"></i>
+        <span id="playText">Avto-taqdimot (2 min)</span>
+      </button>
+      <a href="index.html" target="_blank" class="btn">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        <span>Saytga kirish</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Slides -->
+  <main>
+
+    <!-- SLIDE 1: Muammo (0:00 - 0:20) -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-circle-exclamation"></i> 1-KADR • 0:00 - 0:20 (Muammo)
+          </div>
+          <h1 class="slide-title">Geymerlar har kuni <span>firibgarlarga aldanmoqda!</span></h1>
+          <p class="slide-desc">
+            O'zbekistonda millionlab FC Mobile (FIFA) ixlosmandlari bor. Lekin akkaunt oldi-sotdisi Telegram guruhlarida noqonuniy va xavfli tarzda amalga oshiriladi.
+          </p>
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon danger"><i class="fa-solid fa-user-slash"></i></div>
+              <span>Pulingizni olib, akkaunt bermay qochadigan soxta "adminlar"</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon danger"><i class="fa-solid fa-lock-open"></i></div>
+              <span>Sotib olingandan so'ng paroli qaytarib o'g'irlanadigan akkauntlar</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon danger"><i class="fa-solid fa-ban"></i></div>
+              <span>Hech qanday rasmiy shartnoma, kafolat yoki arbitraj yo'qligi</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-wrapper">
+          <img src="assets/ai_past_vs_now.jpg" alt="Muammo">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Bizning Yechim (0:20 - 0:45) -->
+    <div class="slide" id="slide-2">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-shield-check"></i> 2-KADR • 0:20 - 0:45 (Yechim)
+          </div>
+          <h1 class="slide-title">Yechim: <span>FC BAZAR</span> — 100% Xavfsiz Garant Bozor</h1>
+          <p class="slide-desc">
+            Biz ushbu tartibsiz bozorga yagona xavfsiz ekotizim olib kirdik. Endi har bir so'm va har bir akkaunt aqlli Escrow (Kafillik) himoyasida!
+          </p>
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-vault"></i></div>
+              <span><b>Avtomatlashgan Escrow tizimi:</b> Pul sotuvchiga darhol berilmaydi, muzlatiladi</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+              <span><b>Tekshirish kafolati:</b> Xaridor akkauntni to'liq tekshirib, keyin tasdiqlaydi</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+              <span><b>24/7 Arbitraj:</b> Har qanday nizoli holatda mablag' 1 daqiqada qaytariladi</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-wrapper">
+          <img src="assets/presentation_banner.jpg" alt="FC BAZAR Escrow Platform">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Jonli Imkoniyatlar & Texnologiyalar (0:45 - 1:15) -->
+    <div class="slide" id="slide-3">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-bolt"></i> 3-KADR • 0:45 - 1:15 (Imkoniyatlar)
+          </div>
+          <h1 class="slide-title">Zamonaviy <span>Ekotizim & Qulayliklar</span></h1>
+          <p class="slide-desc">
+            Platforma ilg'or web-texnologiyalar yordamida noldan qurilgan. Barcha jarayonlar maksimal sodda va tezkor.
+          </p>
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-comments"></i></div>
+              <span><b>Jonli Bitim Xonasi (Deal Chat):</b> Maxfiy ma'lumotlar xavfsiz shifrlangan chatda beriladi</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-credit-card"></i></div>
+              <span><b>Milliy To'lovlar:</b> Payme, Click va Uzum Bank orqali 1-klikda to'ldirish va yechish</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-sliders"></i></div>
+              <span><b>Smart Filtrlar:</b> OVR reytingi (100-125), Tanga qiymati va o'yinchilar bo'yicha qidiruv</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-wrapper" style="background: #111b27; padding: 20px;">
+          <div class="stats-card-grid">
+            <div class="stat-box">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Garant Xavfsizligi</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">&lt; 30s</div>
+              <div class="stat-label">Tezkor Bitim Vaqti</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">0%</div>
+              <div class="stat-label">Xaridor uchun komissiya</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">Avtomatik Ishlash</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: AI & Telegram Integratsiyasi (1:15 - 1:35) -->
+    <div class="slide" id="slide-4">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-robot"></i> 4-KADR • 1:15 - 1:35 (AI & Bot)
+          </div>
+          <h1 class="slide-title">AI Yordamida <span>Avtomatlashtirilgan Nazorat</span></h1>
+          <p class="slide-desc">
+            Biz platformani sun'iy intellekt va Telegram bot texnologiyasi bilan kuchaytirdik.
+          </p>
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-brands fa-telegram"></i></div>
+              <span><b>Telegram Bot:</b> Har bir xarid, xabar va tasdiq real-vaqtda sotuvchi va xaridorga yetkaziladi</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <span><b>AI Narx Baholash:</b> Akkaunt tarkibidagi futbolchilar (Mbappe, R9, Gullit) narxini AI avtomatik baholaydi</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fa-solid fa-shield-virus"></i></div>
+              <span><b>Anti-Fraud AI:</b> Firibgarlik xatti-harakatlarini avtomatik aniqlash va akkauntlarni tekshirish</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-wrapper">
+          <img src="assets/presentation_banner.jpg" alt="AI & Telegram Bot">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Bozor & Biznes Model (1:35 - 1:50) -->
+    <div class="slide" id="slide-5">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-chart-line"></i> 5-KADR • 1:35 - 1:50 (Bozor & Daromad)
+          </div>
+          <h1 class="slide-title">Katta Bozor va <span>Aniq Biznes Model</span></h1>
+          <p class="slide-desc">
+            O'zbekistonda mobil geyming jadal rivojlanmoqda. Biznesimiz monetizatsiyasi o'ta shaffof va barqaror.
+          </p>
+          <div class="features-list">
+            <div class="feature-item">
+              <div class="feature-icon gold"><i class="fa-solid fa-coins"></i></div>
+              <span><b>5% Kafolatlangan Komissiya:</b> Muvaffaqiyatli yakunlangan har bir bitimdan kichik komissiya</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon gold"><i class="fa-solid fa-fire"></i></div>
+              <span><b>Premium VIP E'lonlar:</b> Akkauntini yuqoriga chiqarish uchun pullik xizmatlar</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon gold"><i class="fa-solid fa-users"></i></div>
+              <span><b>50,000+ Faol Auditoriya:</b> Kengayish imkoniyati (PUBG, Free Fire, Brawl Stars)</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual-wrapper" style="background: #0d1522; padding: 24px;">
+          <div class="stats-card-grid">
+            <div class="stat-box">
+              <div class="stat-number" style="color: var(--gold);">5%</div>
+              <div class="stat-label">Bitim Komissiyasi</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" style="color: var(--accent);">50K+</div>
+              <div class="stat-label">Potensial O'yinchilar</div>
+            </div>
+            <div class="stat-box" style="grid-column: span 2;">
+              <div class="stat-number" style="color: var(--primary);">0 Xavf</div>
+              <div class="stat-label">Har ikkala tomon uchun mutlaq shaffoflik</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Xulosa & Call to Action (1:50 - 2:00) -->
+    <div class="slide" id="slide-6">
+      <div class="slide-grid">
+        <div class="slide-info">
+          <div class="slide-badge">
+            <i class="fa-solid fa-flag-checkered"></i> 6-KADR • 1:50 - 2:00 (Xulosa)
+          </div>
+          <h1 class="slide-title"><span>FC BAZAR</span> — Kelajak Geyming Savdosi!</h1>
+          <p class="slide-desc">
+            Biz faqat sayt emas, balki butun O'zbekiston yoshlari va geymerlari uchun ishonch, qulaylik va xavfsizlik standarti yaratdik.
+          </p>
+          <div class="features-list">
+            <div class="feature-item" style="border-color: var(--primary);">
+              <div class="feature-icon"><i class="fa-solid fa-check-double"></i></div>
+              <span>Platforma to'liq ishchi holatda va bugundan foydalanishga tayyor!</span>
+            </div>
+          </div>
+          <div style="margin-top: 24px; display: flex; gap: 14px;">
+            <a href="index.html" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 14px 28px;">
+              <i class="fa-solid fa-rocket"></i> Saytni Jonli Sinash
+            </a>
+          </div>
+        </div>
+        <div class="visual-wrapper">
+          <img src="assets/presentation_banner.jpg" alt="FC BAZAR Final">
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Teleprompter / Speaker Speech Bar -->
+  <div class="teleprompter" id="prompterBox">
+    <div class="prompter-header">
+      <span><i class="fa-solid fa-microphone"></i> Taqdimotda gapirishingiz kerak bo'lgan so'zma-so'z nutq (O'zbek tilida):</span>
+      <span id="slideIndicator">1 / 6-Slayd (0:00 - 0:20)</span>
+    </div>
+    <div class="prompter-text" id="prompterSpeech">
+      "Assalomu alaykum, hurmatli hakamlar va ishtirokchilar! Bugun O'zbekistonda yuz minglab yoshlar FC Mobile o'ynashadi. Lekin ular o'z akkauntlarini sotish yoki yangisini olishda doim Telegramdagi soxta vositachilar va firibgarlarga aldanib, pullaridan ayrilmoqda. Bu bozorda xavfsizlik nol darajada edi!"
+    </div>
+  </div>
+
+  <!-- Footer Navigation -->
+  <footer>
+    <div class="hotkey-hint">
+      Klaviatura orqali boshqarish: <kbd>← Chapga</kbd> va <kbd>→ O'ngga</kbd> | To'liq ekran: <kbd>F11</kbd>
+    </div>
+
+    <div class="slide-dots">
+      <div class="dot active" onclick="goToSlide(0)"></div>
+      <div class="dot" onclick="goToSlide(1)"></div>
+      <div class="dot" onclick="goToSlide(2)"></div>
+      <div class="dot" onclick="goToSlide(3)"></div>
+      <div class="dot" onclick="goToSlide(4)"></div>
+      <div class="dot" onclick="goToSlide(5)"></div>
+    </div>
+
+    <div class="nav-btn-group">
+      <button class="btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> Oldingi</button>
+      <button class="btn btn-primary" onclick="nextSlide()">Keyingi <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </footer>
+
+  <script>
+    const speeches = [
+      {
+        time: "0:00 - 0:20",
+        text: "Assalomu alaykum, hurmatli hakamlar va ishtirokchilar! Bugun O'zbekistonda yuz minglab yoshlar FC Mobile o'ynaydi. Lekin ular o'z akkauntlarini sotish yoki yangisini olishda doim Telegramdagi soxta vositachilarga aldanib, pullaridan ayrilmoqda. Bu tartibsiz bozorda xavfsizlik muammosi o'ta dolzarb edi!"
+      },
+      {
+        time: "0:20 - 0:45",
+        text: "Biz ushbu muammoga zamonaviy yechim berdik — 'FC BAZAR'! Bu O'zbekistondagi 1-raqamli avtomatlashtirilgan Garant platformasi. Endi xaridor to'lagan pul to'g'ridan-to'g'ri sotuvchiga berilmaydi, balki Escrow hamyonda xavfsiz muzlatiladi. Xaridor akkauntni tekshirib, parollarni o'zgartirgandan keyingina mablag' sotuvchiga o'tkaziladi!"
+      },
+      {
+        time: "0:45 - 1:15",
+        text: "Saytimiz imkoniyatlariga qarasak: foydalanuvchilar Payme, Click va Uzum Bank orqali 1 ta klikda hisobni to'ldirishi, real vaqtdagi maxfiy Bitim Xonasida suhbatlashishi va OVR reytingi bo'yicha orzuidagi jamoani bir necha soniyada topishi mumkin. Har qanday bahsli holatda 24/7 ishlaydigan Arbitraj tizimi pulni bir zumda qaytaradi."
+      },
+      {
+        time: "1:15 - 1:35",
+        text: "Loyiha sun'iy intellekt va Telegram bot texnologiyalari bilan to'liq avtomatlashtirilgan. Har bir yangi bitim va to'lov haqida o'yinchilarning cho'ntagiga Telegram orqali lahzalik xabarnoma boradi. Sun'iy intellekt esa akkaunt tarkibidagi qimmatbaho o'yinchilar narxini avtomatik tahlil qilib beradi."
+      },
+      {
+        time: "1:35 - 1:50",
+        text: "Biznes modelimiz juda oddiy va barqaror: platforma har bir muvaffaqiyatli bitimdan atigi 5 foiz xavfsizlik komissiyasi oladi, xaridor uchun esa xizmat mutlaqo bepul. Kelgusida biz ushbu platformani PUBG Mobile, Free Fire va boshqa yirik kiber-o'yinlar uchun ham kengaytiramiz."
+      },
+      {
+        time: "1:50 - 2:00",
+        text: "Xulosa qilib aytganda, FC BAZAR — bu quruq g'oya emas, balki hozirning o'zida to'liq ishlab turgan tayyor loyiha! Biz geymerlarimizga halol, tezkor va xavfsiz muhit taqdim etmoqdamiz. E'tiboringiz uchun rahmat, barchangizni loyihamizni sinab ko'rishga taklif qilamiz!"
+      }
+    ];
+
+    let currentSlide = 0;
+    const totalSlides = 6;
+    let autoPlayInterval = null;
+    let timerSeconds = 120;
+    let timerInterval = null;
+
+    function updateSlide() {
+      // Update slide elements
+      for (let i = 1; i <= totalSlides; i++) {
+        const el = document.getElementById(`slide-${i}`);
+        if (el) el.classList.remove('active');
+      }
+      const activeEl = document.getElementById(`slide-${currentSlide + 1}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Update dots
+      document.querySelectorAll('.dot').forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlide);
+      });
+
+      // Update prompter
+      const speech = speeches[currentSlide];
+      document.getElementById('slideIndicator').innerText = `${currentSlide + 1} / ${totalSlides}-Slayd (${speech.time})`;
+      document.getElementById('prompterSpeech').innerText = speech.text;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlide();
+    }
+
+    // Keyboard events
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    // Prompter toggle
+    function togglePrompter() {
+      const box = document.getElementById('prompterBox');
+      if (box.style.display === 'none') {
+        box.style.display = 'flex';
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    // Auto Play mode for exactly 2 minutes (120s total, ~20s per slide)
+    function toggleAutoPlay() {
+      const btn = document.getElementById('btnAutoPlay');
+      const icon = document.getElementById('playIcon');
+      const text = document.getElementById('playText');
+
+      if (autoPlayInterval) {
+        // Stop
+        clearInterval(autoPlayInterval);
+        clearInterval(timerInterval);
+        autoPlayInterval = null;
+        timerInterval = null;
+        icon.className = 'fa-solid fa-play';
+        text.innerText = 'Avto-taqdimot (2 min)';
+        btn.classList.remove('btn-danger');
+        btn.classList.add('btn-primary');
+      } else {
+        // Start
+        currentSlide = 0;
+        updateSlide();
+        timerSeconds = 120;
+        updateTimerDisplay();
+
+        icon.className = 'fa-solid fa-pause';
+        text.innerText = 'To\'xtatish';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-danger');
+
+        // Slide timing: 
+        // Slide 0: 20s
+        // Slide 1: 25s
+        // Slide 2: 30s
+        // Slide 3: 20s
+        // Slide 4: 15s
+        // Slide 5: 10s
+        const slideDurations = [20, 25, 30, 20, 15, 10]; // sum = 120s
+
+        let elapsedInSlide = 0;
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            elapsedInSlide++;
+            updateTimerDisplay();
+
+            if (elapsedInSlide >= slideDurations[currentSlide] && currentSlide < totalSlides - 1) {
+              elapsedInSlide = 0;
+              nextSlide();
+            }
+          } else {
+            toggleAutoPlay();
+          }
+        }, 1000);
+      }
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      document.getElementById('timerDisplay').innerText = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+  </script>
+</body>
+</html>

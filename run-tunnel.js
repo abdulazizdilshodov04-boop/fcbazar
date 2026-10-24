@@ -6,45 +6,76 @@ const telegramBot = require('./telegram-bot');
 const cloudflaredPath = path.join(__dirname, 'cloudflared.exe');
 
 if (!fs.existsSync(cloudflaredPath)) {
-  console.log('cloudflared.exe topilmadi.');
+  console.error('❌ cloudflared.exe topilmadi!');
   process.exit(1);
 }
 
-console.log('⚡ Cloudflare HTTPS Tunneli ishga tushirilmoqda...');
+let tunnelProcess = null;
+let isStopping = false;
+let restartAttempts = 0;
 
-const tunnel = spawn(cloudflaredPath, ['tunnel', '--url', 'http://localhost:5000'], {
-  stdio: ['ignore', 'pipe', 'pipe']
-});
+function startTunnel() {
+  if (isStopping) return;
 
-let foundUrl = false;
+  console.log('⚡ [Cloudflare Tunnel] Ulanish boshlanmoqda (PORT: 5000)...');
 
-function handleOutput(data) {
-  const text = data.toString();
-  process.stdout.write(text);
+  tunnelProcess = spawn(cloudflaredPath, ['tunnel', '--url', 'http://localhost:5000'], {
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
 
-  if (!foundUrl) {
-    const match = text.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
-    if (match) {
-      foundUrl = true;
-      const publicUrl = match[0];
-      console.log('\n======================================================');
-      console.log(`🎉 JONLI HTTPS SAYT MANZILI TAYYOR: ${publicUrl}`);
-      console.log(`🤖 Telegram Botga havola yuborilmoqda...`);
-      console.log('======================================================\n');
-      
-      telegramBot.updateSiteUrl(publicUrl);
+  let foundUrl = false;
+
+  function handleOutput(data) {
+    const text = data.toString();
+    process.stdout.write(text);
+
+    if (!foundUrl) {
+      const match = text.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
+      if (match) {
+        foundUrl = true;
+        restartAttempts = 0;
+        const publicUrl = match[0];
+        console.log('\n======================================================');
+        console.log(`🎉 JONLI HTTPS SAYT MANZILI TAYYOR: ${publicUrl}`);
+        console.log(`🤖 Telegram Botga yangi havola avtomatik biriktirilmoqda...`);
+        console.log('======================================================\n');
+        
+        telegramBot.updateSiteUrl(publicUrl);
+      }
     }
   }
+
+  tunnelProcess.stdout.on('data', handleOutput);
+  tunnelProcess.stderr.on('data', handleOutput);
+
+  tunnelProcess.on('error', (err) => {
+    console.error('⚠️ [Cloudflare xatosi]:', err.message);
+  });
+
+  tunnelProcess.on('close', (code) => {
+    tunnelProcess = null;
+    if (isStopping) return;
+
+    restartAttempts++;
+    const delay = Math.min(restartAttempts * 2000, 10000);
+    console.warn(`\n⚠️ Tunnel uzildi (kod: ${code}). ${delay / 1000} soniyadan keyin avtomatik qayta ulanadi...\n`);
+    setTimeout(startTunnel, delay);
+  });
 }
 
-tunnel.stdout.on('data', handleOutput);
-tunnel.stderr.on('data', handleOutput);
+// Boshlash
+startTunnel();
 
-tunnel.on('close', (code) => {
-  console.log(`Tunnel jarayoni tugadi, kod: ${code}`);
-});
+// Xavfsiz to'xtatish
+function cleanup() {
+  isStopping = true;
+  if (tunnelProcess) {
+    try {
+      tunnelProcess.kill();
+    } catch (e) {}
+  }
+  process.exit(0);
+}
 
-process.on('SIGINT', () => {
-  tunnel.kill();
-  process.exit();
-});
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
