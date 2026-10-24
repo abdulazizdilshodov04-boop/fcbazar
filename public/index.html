@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FC Mobile Akkaunt Savdo — FC BAZAR | 100% Xavfsiz Garant Tizimi</title>
   
   <!-- SEO & Google Indexing -->
@@ -145,12 +145,81 @@
         </div>
 
         <!-- Mobile hamburger menu toggle -->
-        <button class="btn-mobile-toggle" onclick="app.toggleMobileMenu()">
+        <button class="btn-mobile-toggle" onclick="app.toggleMobileMenu()" aria-label="Mobil menyuni ochish" aria-expanded="false">
           <i class="fa-solid fa-bars"></i>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- MOBILE DRAWER & BACKDROP -->
+  <div class="mobile-drawer-overlay" id="mobile-drawer-overlay" onclick="app.toggleMobileMenu(true)"></div>
+  <aside class="mobile-drawer" id="mobile-drawer" aria-label="Mobil menyu">
+    <div class="drawer-header">
+      <div class="nav-brand" onclick="app.navigate('catalog'); app.toggleMobileMenu(true);">
+        <img src="/assets/logo.jpg" alt="FC 27 Mobile Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">FC BAZAR<span class="brand-dot">.UZ</span></span>
+          <span class="brand-sub">FC MOBILE MARKET 24/7</span>
+        </div>
+      </div>
+      <button class="drawer-close-btn" onclick="app.toggleMobileMenu(true)" aria-label="Menyuni yopish">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- User Quick Info in Drawer (if logged in) -->
+    <div class="drawer-user-card" id="drawer-user-card" style="display:none;">
+      <img src="" alt="avatar" id="drawer-user-avatar" class="drawer-user-img">
+      <div class="drawer-user-info">
+        <div class="drawer-user-name" id="drawer-user-name">User</div>
+        <div class="drawer-user-role" id="drawer-user-role">🎮 Foydalanuvchi</div>
+        <div class="drawer-user-balance" id="drawer-user-balance" onclick="app.openWalletModal(); app.toggleMobileMenu(true);">
+          <i class="fa-solid fa-wallet text-neon"></i> <span id="drawer-user-balance-val">0 so'm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-nav-links">
+      <button class="drawer-link active" onclick="app.navigate('catalog'); app.toggleMobileMenu(true);" id="drawer-btn-catalog">
+        <i class="fa-solid fa-gamepad"></i> Akkauntlar Bozori
+      </button>
+      <button class="drawer-link" onclick="app.navigate('howitworks'); app.toggleMobileMenu(true);" id="drawer-btn-how">
+        <i class="fa-solid fa-shield-halved"></i> Garant Tizimi (Qoidalar)
+      </button>
+      <button class="drawer-link" onclick="app.navigate('deals'); app.toggleMobileMenu(true);" id="drawer-btn-deals">
+        <i class="fa-solid fa-handshake"></i> Bitimlarim
+        <span class="badge-counter" id="drawer-deals-count" style="display:none;">0</span>
+      </button>
+      <button class="drawer-link" onclick="app.openSellModal(); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-plus-circle text-neon"></i> Akkaunt Sotish (E'lon)
+      </button>
+      <button class="drawer-link" onclick="app.openWalletModal(); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-credit-card text-cyan"></i> Hamyon & Tranzaksiyalar
+      </button>
+      <button class="drawer-link" onclick="app.openModal('modal-support'); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-headset text-gold"></i> 24/7 Qo'llab-quvvatlash
+      </button>
+      <button class="drawer-link admin-only" id="drawer-btn-admin" onclick="app.navigate('admin'); app.toggleMobileMenu(true);" style="display:none;">
+        <i class="fa-solid fa-crown text-gold"></i> Admin Panel
+      </button>
+    </div>
+
+    <div class="drawer-footer" id="drawer-guest-actions">
+      <button class="btn btn-primary btn-block" onclick="app.openAuthModal('login'); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-right-to-bracket"></i> Kirish
+      </button>
+      <button class="btn btn-outline btn-block" onclick="app.openAuthModal('register'); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-user-plus"></i> Ro'yxatdan o'tish
+      </button>
+    </div>
+
+    <div class="drawer-footer" id="drawer-user-actions" style="display:none;">
+      <button class="btn btn-outline btn-block text-danger" onclick="app.logout(); app.toggleMobileMenu(true);">
+        <i class="fa-solid fa-right-from-bracket"></i> Tizimdan chiqish
+      </button>
+    </div>
+  </aside>
 
   <!-- MAIN APP CONTAINER -->
   <main class="main-content">
@@ -1134,6 +1203,35 @@
       </div>
     </div>
   </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION DOCK (App-like experience for phones & Telegram WebApp) -->
+  <nav class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Mobil pastki navigatsiya">
+    <button class="bottom-bar-item active" onclick="app.navigate('catalog')" id="bottom-nav-catalog">
+      <i class="fa-solid fa-gamepad"></i>
+      <span>Bozor</span>
+    </button>
+    <button class="bottom-bar-item" onclick="app.navigate('howitworks')" id="bottom-nav-how">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Garant</span>
+    </button>
+    <button class="bottom-bar-item bottom-bar-cta" onclick="app.openSellModal()" id="bottom-nav-sell">
+      <div class="bottom-cta-circle">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <span>Sotish</span>
+    </button>
+    <button class="bottom-bar-item" onclick="app.navigate('deals')" id="bottom-nav-deals">
+      <div class="bottom-bar-icon-wrap">
+        <i class="fa-solid fa-handshake"></i>
+        <span class="badge-counter" id="bottom-deals-count" style="display:none;">0</span>
+      </div>
+      <span>Bitimlar</span>
+    </button>
+    <button class="bottom-bar-item" onclick="app.handleProfileOrAuthClick()" id="bottom-nav-profile">
+      <i class="fa-solid fa-user"></i>
+      <span id="bottom-nav-profile-label">Profil</span>
+    </button>
+  </nav>
 
   <!-- FLOATING SUPPORT BUTTON -->
   <button class="btn-floating-support" onclick="app.openModal('modal-support')" title="Admin & Qo'llab-quvvatlash (24/7)">

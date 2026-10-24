@@ -231,11 +231,22 @@ const app = {
     const menuTitle = document.getElementById('menu-user-title');
     const menuRole = document.getElementById('menu-user-role');
 
+    // Drawer elements
+    const drawerUserCard = document.getElementById('drawer-user-card');
+    const drawerAvatar = document.getElementById('drawer-user-avatar');
+    const drawerName = document.getElementById('drawer-user-name');
+    const drawerBalanceVal = document.getElementById('drawer-user-balance-val');
+    const drawerGuestActions = document.getElementById('drawer-guest-actions');
+    const drawerUserActions = document.getElementById('drawer-user-actions');
+    const drawerBtnAdmin = document.getElementById('drawer-btn-admin');
+    const bottomProfileLabel = document.getElementById('bottom-nav-profile-label');
+
     if (this.state.user) {
       guestSection.style.display = 'none';
       userSection.style.display = 'flex';
 
-      navBalance.textContent = (this.state.user.balance || 0).toLocaleString() + " so'm";
+      const balanceText = (this.state.user.balance || 0).toLocaleString() + " so'm";
+      navBalance.textContent = balanceText;
       navAvatar.src = this.state.user.avatar || DEFAULT_AVATAR_SVG;
       navName.textContent = this.state.user.username;
 
@@ -244,15 +255,33 @@ const app = {
 
       if (this.state.user.role === 'admin') {
         adminBtn.style.display = 'flex';
+        if (drawerBtnAdmin) drawerBtnAdmin.style.display = 'flex';
       } else {
         adminBtn.style.display = 'none';
+        if (drawerBtnAdmin) drawerBtnAdmin.style.display = 'none';
       }
+
+      // Drawer updates
+      if (drawerUserCard) drawerUserCard.style.display = 'flex';
+      if (drawerAvatar) drawerAvatar.src = this.state.user.avatar || DEFAULT_AVATAR_SVG;
+      if (drawerName) drawerName.textContent = this.state.user.username;
+      if (drawerBalanceVal) drawerBalanceVal.textContent = balanceText;
+      if (drawerGuestActions) drawerGuestActions.style.display = 'none';
+      if (drawerUserActions) drawerUserActions.style.display = 'block';
+      if (bottomProfileLabel) bottomProfileLabel.textContent = this.state.user.username;
 
       this.updateActiveDealsCount();
     } else {
       guestSection.style.display = 'flex';
       userSection.style.display = 'none';
       adminBtn.style.display = 'none';
+
+      // Drawer updates
+      if (drawerUserCard) drawerUserCard.style.display = 'none';
+      if (drawerGuestActions) drawerGuestActions.style.display = 'flex';
+      if (drawerUserActions) drawerUserActions.style.display = 'none';
+      if (drawerBtnAdmin) drawerBtnAdmin.style.display = 'none';
+      if (bottomProfileLabel) bottomProfileLabel.textContent = 'Kirish';
     }
   },
 
@@ -261,9 +290,32 @@ const app = {
     menu.classList.toggle('show');
   },
 
-  toggleMobileMenu() {
-    const menu = document.querySelector('.nav-menu');
-    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+  toggleMobileMenu(forceClose = false) {
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    const btn = document.querySelector('.btn-mobile-toggle');
+    if (!drawer) return;
+
+    const isOpen = drawer.classList.contains('open');
+    if (forceClose || isOpen) {
+      drawer.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('drawer-open');
+    } else {
+      drawer.classList.add('open');
+      if (overlay) overlay.classList.add('open');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('drawer-open');
+    }
+  },
+
+  handleProfileOrAuthClick() {
+    if (this.state.user) {
+      this.navigate('profile');
+    } else {
+      this.openAuthModal('login');
+    }
   },
 
   openAuthModal(tab = 'login') {
@@ -388,8 +440,8 @@ const app = {
       view.classList.remove('active');
     });
 
-    // Update active nav button
-    document.querySelectorAll('.nav-link').forEach(link => {
+    // Update active nav button across navbar, drawer, and bottom dock
+    document.querySelectorAll('.nav-link, .drawer-link, .bottom-bar-item').forEach(link => {
       link.classList.remove('active');
     });
 
@@ -398,10 +450,12 @@ const app = {
       targetView.classList.add('active');
     }
 
-    const navBtn = document.getElementById(`nav-btn-${viewId}`);
-    if (navBtn) {
-      navBtn.classList.add('active');
-    }
+    document.getElementById(`nav-btn-${viewId}`)?.classList.add('active');
+    document.getElementById(`drawer-btn-${viewId}`)?.classList.add('active');
+    document.getElementById(`bottom-nav-${viewId}`)?.classList.add('active');
+
+    // Automatically close mobile drawer when navigating
+    this.toggleMobileMenu(true);
 
     this.state.activeView = viewId;
     window.location.hash = viewId;
@@ -973,13 +1027,18 @@ const app = {
     try {
       const res = await API.deals.getAll();
       const active = (res.deals || []).filter(d => ['escrow_hold', 'credentials_sent', 'dispute'].includes(d.status));
-      const badge = document.getElementById('active-deals-count');
-      if (active.length > 0) {
-        badge.textContent = active.length;
-        badge.style.display = 'inline-block';
-      } else {
-        badge.style.display = 'none';
-      }
+      const count = active.length;
+      ['active-deals-count', 'drawer-deals-count', 'bottom-deals-count'].forEach(id => {
+        const badge = document.getElementById(id);
+        if (badge) {
+          if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      });
     } catch (e) {
       // ignore
     }
