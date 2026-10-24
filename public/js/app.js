@@ -961,8 +961,12 @@ const app = {
           ` : ''}
 
           ${isBuyer && (deal.status === 'credentials_sent' || deal.status === 'escrow_hold') ? `
-            <button class="btn btn-primary btn-block btn-lg" onclick="app.confirmDealAndRelease('${deal.id}')">
-              <i class="fa-solid fa-circle-check"></i> Akkauntni Qabul Qildim (Pulni topshirish)
+            <button class="btn btn-primary btn-block btn-lg" onclick="app.confirmDealAndRelease('${deal.id}')" style="height: auto; min-height: 52px; padding: 10px 14px; gap: 10px;">
+              <i class="fa-solid fa-circle-check" style="flex-shrink: 0; font-size: 1.2rem;"></i>
+              <div style="display:flex; flex-direction:column; align-items:center; line-height:1.2;">
+                <span style="font-size:0.94rem; font-weight:700;">Akkauntni Qabul Qildim</span>
+                <span style="font-size:0.75rem; opacity:0.85; font-weight:500;">(Pul topshiriladi)</span>
+              </div>
             </button>
           ` : ''}
 
