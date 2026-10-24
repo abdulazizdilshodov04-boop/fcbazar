@@ -258,29 +258,50 @@ button, input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-family: inherit;
   font-weight: 600;
-  font-size: 0.9rem;
-  padding: 10px 18px;
+  font-size: 0.92rem;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 18px;
   border-radius: var(--radius-sm);
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--transition-fast);
   user-select: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.btn i {
+  font-size: 0.95em;
+  flex-shrink: 0;
 }
 
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 0.8rem;
+  height: 34px;
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 0.82rem;
+  border-radius: 6px;
+  gap: 6px;
 }
 
 .btn-lg {
-  padding: 13px 24px;
-  font-size: 1.05rem;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 24px;
+  font-size: 0.98rem;
+  font-weight: 700;
   border-radius: var(--radius-md);
+  gap: 10px;
 }
 
 .btn-block {
   width: 100%;
+  display: flex;
 }
 
 .btn-primary {
@@ -288,6 +309,7 @@ button, input, select, textarea {
   color: #06120b;
   font-weight: 700;
   box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3);
+  border: none;
 }
 
 .btn-primary:hover {
@@ -301,6 +323,7 @@ button, input, select, textarea {
   color: #031326;
   font-weight: 700;
   box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+  border: none;
 }
 
 .btn-neon-sell:hover {
@@ -323,6 +346,7 @@ button, input, select, textarea {
 .btn-danger {
   background: var(--neon-red);
   color: #fff;
+  border: none;
 }
 .btn-danger:hover {
   background: #ff1f44;
@@ -568,18 +592,31 @@ button, input, select, textarea {
   margin-bottom: 50px;
 }
 
+.btn-hero-primary,
+.btn-hero-secondary,
+.btn-hero-outline {
+  height: 52px;
+  min-height: 52px;
+  padding: 0 26px;
+  font-family: var(--font-gaming);
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
 .btn-hero-primary {
   background: linear-gradient(135deg, var(--neon-green), #00c968);
   color: #03140a;
-  font-family: var(--font-gaming);
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 14px 28px;
-  border-radius: var(--radius-md);
   border: none;
-  cursor: pointer;
   box-shadow: 0 0 25px rgba(0, 255, 135, 0.4);
-  transition: var(--transition-fast);
 }
 
 .btn-hero-primary:hover {
@@ -590,15 +627,8 @@ button, input, select, textarea {
 .btn-hero-secondary {
   background: linear-gradient(135deg, var(--neon-cyan), #00aeff);
   color: #02111d;
-  font-family: var(--font-gaming);
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 14px 28px;
-  border-radius: var(--radius-md);
   border: none;
-  cursor: pointer;
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-  transition: var(--transition-fast);
 }
 
 .btn-hero-secondary:hover {
@@ -610,15 +640,12 @@ button, input, select, textarea {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-light);
   color: #fff;
-  font-size: 0.95rem;
-  padding: 14px 22px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--transition-fast);
 }
+
 .btn-hero-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 .hero-features {
@@ -781,48 +808,64 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .ovr-chip {
+  height: 36px;
+  min-height: 36px;
+  min-width: 48px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   color: var(--text-muted);
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .ovr-chip:hover {
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
 }
 
 .ovr-chip.active {
   background: rgba(0, 255, 135, 0.15);
   border-color: var(--neon-green);
   color: var(--neon-green);
-  font-weight: 700;
+  box-shadow: 0 0 12px rgba(0, 255, 135, 0.2);
 }
 
 .btn-reset-filter {
+  height: 36px;
+  min-height: 36px;
   background: transparent;
   border: 1px dashed var(--border-light);
   color: var(--text-muted);
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   transition: var(--transition-fast);
+  box-sizing: border-box;
 }
+
 .btn-reset-filter:hover {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .catalog-header-bar {
@@ -1875,22 +1918,36 @@ button, input, select, textarea {
   margin-bottom: 20px;
 }
 
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
 .auth-tab-btn {
-  flex: 1;
+  height: 46px;
+  min-height: 46px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   color: var(--text-muted);
-  padding: 12px;
+  padding: 0 16px;
   border-radius: var(--radius-md);
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .auth-tab-btn.active {
-  background: rgba(0, 255, 135, 0.12);
+  background: rgba(0, 255, 135, 0.14);
   border-color: var(--neon-green);
   color: var(--neon-green);
+  box-shadow: 0 0 12px rgba(0, 255, 135, 0.2);
 }
 
 .quick-demo-accounts {
@@ -1911,29 +1968,36 @@ button, input, select, textarea {
 }
 
 .quick-demo-buttons {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .btn-demo-chip {
+  height: 38px;
+  min-height: 38px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   color: var(--text-main);
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 6px 10px;
+  padding: 0 8px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 6px;
   transition: var(--transition-fast);
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .btn-demo-chip:hover {
   border-color: var(--neon-cyan);
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(0, 240, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 /* Forms */
@@ -2092,6 +2156,13 @@ input:focus, select:focus, textarea:focus {
   margin-top: 24px;
 }
 
+.modal-footer-actions .btn {
+  height: 44px;
+  min-height: 44px;
+  min-width: 130px;
+  padding: 0 20px;
+}
+
 /* Wallet Topup Grid */
 .payment-methods-grid {
   display: grid;
@@ -2101,23 +2172,30 @@ input:focus, select:focus, textarea:focus {
 }
 
 .pay-method-card {
+  height: 48px;
+  min-height: 48px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 14px 8px;
+  padding: 0 8px;
   text-align: center;
   cursor: pointer;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .pay-method-card input {
   display: none;
 }
 
+.pay-method-card.active,
 .pay-method-card:has(input:checked) {
   border-color: var(--neon-green);
-  background: rgba(0, 255, 135, 0.1);
+  background: rgba(0, 255, 135, 0.15);
+  box-shadow: 0 0 12px rgba(0, 255, 135, 0.25);
 }
 
 .pay-name {
@@ -2126,27 +2204,36 @@ input:focus, select:focus, textarea:focus {
 }
 
 .quick-sum-chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin-top: 10px;
+  margin-bottom: 6px;
 }
 
 .sum-chip {
+  height: 38px;
+  min-height: 38px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   color: var(--text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0 6px;
+  border-radius: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   transition: var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .sum-chip:hover {
   color: #fff;
   border-color: var(--neon-green);
+  background: rgba(0, 255, 135, 0.1);
 }
 
 .wallet-balance-display {
@@ -2170,27 +2257,42 @@ input:focus, select:focus, textarea:focus {
 }
 
 .wallet-action-tabs {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .wtab {
-  flex: 1;
+  height: 46px;
+  min-height: 46px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-light);
   color: var(--text-muted);
-  font-weight: 600;
-  padding: 10px;
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 0 6px;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.wtab:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .wtab.active {
-  background: rgba(0, 255, 135, 0.12);
+  background: rgba(0, 255, 135, 0.14);
   border-color: var(--neon-green);
   color: var(--neon-green);
+  box-shadow: 0 0 12px rgba(0, 255, 135, 0.2);
 }
 
 .text-hint {
@@ -2338,6 +2440,45 @@ input:focus, select:focus, textarea:focus {
   .steps-grid { grid-template-columns: 1fr; }
   .footer-container { grid-template-columns: 1fr; }
   .hero-title { font-size: 1.8rem; }
+
+  /* Mobile button proportions & grids */
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+  .btn-hero-primary,
+  .btn-hero-secondary,
+  .btn-hero-outline {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    font-size: 0.98rem;
+  }
+
+  .wallet-action-tabs {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .payment-methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .quick-sum-chips {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .quick-demo-buttons {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .modal-footer-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  .modal-footer-actions .btn {
+    width: 100%;
+  }
 }
 
 .page-view {

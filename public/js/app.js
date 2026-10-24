@@ -1121,25 +1121,43 @@ const app = {
     if (!this.requireLoginPrompt()) return;
     document.getElementById('modal-wallet-amount').textContent = (this.state.user.balance || 0).toLocaleString() + " so'm";
     this.switchWalletTab(tab);
+
+    document.querySelectorAll('.pay-method-card').forEach(card => {
+      card.onclick = () => {
+        document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+      };
+    });
+
     this.openModal('modal-wallet');
   },
 
   switchWalletTab(tab) {
     const topupBtn = document.getElementById('wtab-topup');
+    const transferBtn = document.getElementById('wtab-transfer');
     const withdrawBtn = document.getElementById('wtab-withdraw');
     const formTopup = document.getElementById('form-topup');
+    const formTransfer = document.getElementById('form-transfer');
     const formWithdraw = document.getElementById('form-withdraw');
 
+    topupBtn?.classList.remove('active');
+    transferBtn?.classList.remove('active');
+    withdrawBtn?.classList.remove('active');
+    if (formTopup) formTopup.style.display = 'none';
+    if (formTransfer) formTransfer.style.display = 'none';
+    if (formWithdraw) formWithdraw.style.display = 'none';
+
     if (tab === 'topup') {
-      topupBtn.classList.add('active');
-      withdrawBtn.classList.remove('active');
-      formTopup.style.display = 'block';
-      formWithdraw.style.display = 'none';
+      topupBtn?.classList.add('active');
+      if (formTopup) formTopup.style.display = 'block';
+    } else if (tab === 'transfer') {
+      transferBtn?.classList.add('active');
+      if (formTransfer) formTransfer.style.display = 'block';
     } else {
-      withdrawBtn.classList.add('active');
-      topupBtn.classList.remove('active');
-      formTopup.style.display = 'none';
-      formWithdraw.style.display = 'block';
+      withdrawBtn?.classList.add('active');
+      if (formWithdraw) formWithdraw.style.display = 'block';
     }
   },
 
@@ -1147,11 +1165,21 @@ const app = {
     document.getElementById('topup-amount').value = amt;
   },
 
+  setTransferAmount(amt) {
+    document.getElementById('transfer-amount').value = amt;
+  },
+
   async handleTopup(e) {
     e.preventDefault();
-    const amount = parseInt(document.getElementById('topup-amount').value);
+    const rawVal = document.getElementById('topup-amount').value;
+    const amount = parseInt(String(rawVal || '').replace(/[\s,\.]/g, ''), 10);
     const provider = document.querySelector('input[name="topup-provider"]:checked')?.value || 'Payme';
     const btn = document.getElementById('btn-submit-topup');
+
+    if (isNaN(amount) || amount < 1000) {
+      this.showToast('Minimal to\'ldirish summasi 1,000 so\'m', 'error');
+      return;
+    }
 
     try {
       btn.disabled = true;
@@ -1176,12 +1204,63 @@ const app = {
     }
   },
 
+  async handleTransfer(e) {
+    e.preventDefault();
+    const recipient = document.getElementById('transfer-recipient').value.trim();
+    const rawVal = document.getElementById('transfer-amount').value;
+    const amount = parseInt(String(rawVal || '').replace(/[\s,\.]/g, ''), 10);
+    const btn = document.getElementById('btn-submit-transfer');
+
+    if (!recipient) {
+      this.showToast('Qabul qiluvchining username yoki pochtasini kiriting', 'error');
+      return;
+    }
+
+    if (isNaN(amount) || amount < 1000) {
+      this.showToast('Minimal o\'tkazish summasi 1,000 so\'m', 'error');
+      return;
+    }
+
+    if ((this.state.user.balance || 0) < amount) {
+      this.showToast('Balansingizda mablag\' yetarli emas!', 'error');
+      return;
+    }
+
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> O\'tkazilmoqda...';
+
+      const res = await API.wallet.transfer(recipient, amount);
+      this.state.user.balance = res.newBalance;
+      API.setUser(this.state.user);
+
+      this.updateAuthUI();
+      this.closeModal('modal-wallet');
+      this.showToast(res.message, 'success');
+
+      if (this.state.activeView === 'profile') {
+        this.loadProfile();
+      }
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Pulni O\'tkazish';
+    }
+  },
+
   async handleWithdraw(e) {
     e.preventDefault();
-    const amount = parseInt(document.getElementById('withdraw-amount').value);
+    const rawVal = document.getElementById('withdraw-amount').value;
+    const amount = parseInt(String(rawVal || '').replace(/[\s,\.]/g, ''), 10);
     const cardNumber = document.getElementById('withdraw-card').value.trim();
     const cardHolder = document.getElementById('withdraw-holder').value.trim();
     const btn = document.getElementById('btn-submit-withdraw');
+
+    if (isNaN(amount) || amount < 10000) {
+      this.showToast('Minimal yechib olish summasi 10,000 so\'m', 'error');
+      return;
+    }
 
     try {
       btn.disabled = true;

@@ -186,6 +186,12 @@ const API = {
         body: JSON.stringify({ amount, method })
       }),
 
+    transfer: (recipient, amount) =>
+      API.request('/wallet/transfer', {
+        method: 'POST',
+        body: JSON.stringify({ recipient, amount })
+      }),
+
     withdraw: (amount, cardNumber, cardHolder) =>
       API.request('/wallet/withdraw', {
         method: 'POST',

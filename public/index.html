@@ -95,7 +95,7 @@
             <i class="fa-solid fa-right-to-bracket"></i> Kirish
           </button>
           <button class="btn btn-primary" onclick="app.openAuthModal('register')">
-            Ro'yxatdan o'tish
+            <i class="fa-solid fa-user-plus"></i> Ro'yxatdan o'tish
           </button>
         </div>
 
@@ -855,10 +855,13 @@
       </div>
 
       <div class="wallet-action-tabs">
-        <button class="wtab active" id="wtab-topup" onclick="app.switchWalletTab('topup')">
+        <button type="button" class="wtab active" id="wtab-topup" onclick="app.switchWalletTab('topup')">
           <i class="fa-solid fa-plus-circle"></i> Hisobni To'ldirish
         </button>
-        <button class="wtab" id="wtab-withdraw" onclick="app.switchWalletTab('withdraw')">
+        <button type="button" class="wtab" id="wtab-transfer" onclick="app.switchWalletTab('transfer')">
+          <i class="fa-solid fa-paper-plane"></i> Pul O'tkazish
+        </button>
+        <button type="button" class="wtab" id="wtab-withdraw" onclick="app.switchWalletTab('withdraw')">
           <i class="fa-solid fa-money-bill-transfer"></i> Kartaga Yechish
         </button>
       </div>
@@ -898,6 +901,38 @@
 
         <button type="submit" class="btn btn-primary btn-block btn-lg mt-3" id="btn-submit-topup">
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Hisobni To'ldirish
+        </button>
+      </form>
+
+      <!-- Transfer Form (P2P Pul O'tkazish) -->
+      <form id="form-transfer" style="display:none;" onsubmit="app.handleTransfer(event)">
+        <div class="form-group">
+          <label>Qabul qiluvchi (Foydalanuvchi nomi yoki Email)</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-at"></i>
+            <input type="text" id="transfer-recipient" placeholder="Masalan: abdulaziz yoki admin" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>O'tkaziladigan summa (so'm)</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-coins"></i>
+            <input type="number" id="transfer-amount" min="1000" step="5000" placeholder="50000" required class="input-lg">
+          </div>
+        </div>
+
+        <div class="quick-sum-chips">
+          <button type="button" class="sum-chip" onclick="app.setTransferAmount(50000)">50,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTransferAmount(100000)">100,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTransferAmount(300000)">300,000</button>
+          <button type="button" class="sum-chip" onclick="app.setTransferAmount(500000)">500,000</button>
+        </div>
+
+        <p class="text-hint"><i class="fa-solid fa-shield-halved text-neon"></i> Mablag' qabul qiluvchining hisobiga bir zumda 0% komissiya bilan o'tadi.</p>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt-3" id="btn-submit-transfer">
+          <i class="fa-solid fa-paper-plane"></i> Pulni O'tkazish
         </button>
       </form>
 

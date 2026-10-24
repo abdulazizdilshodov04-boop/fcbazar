@@ -25,7 +25,7 @@
       "phone": "+998 93 987 65 43",
       "telegram": "@sardor_gamer",
       "role": "user",
-      "balance": 1500000,
+      "balance": 1520000,
       "frozenBalance": 0,
       "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=sardor",
       "rating": 5,
@@ -59,7 +59,7 @@
       "phone": "+998 98 300 90 80",
       "telegram": "",
       "role": "user",
-      "balance": 100000,
+      "balance": 120000,
       "frozenBalance": 0,
       "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Abdulaziz",
       "rating": 5,
@@ -71,6 +71,51 @@
   ],
   "listings": [],
   "deals": [],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "tx_1792831583107_vspl6h",
+      "userId": "u_buyer_1",
+      "type": "withdraw",
+      "amount": -10000,
+      "balanceAfter": 1520000,
+      "description": "Kartaga yechib olish: 8600 **** **** 9999 (SARDOR)",
+      "status": "completed",
+      "provider": "Uzcard/Humo",
+      "createdAt": "2026-10-24T08:46:23.107Z"
+    },
+    {
+      "id": "tx_1792831583084_q31jzh",
+      "userId": "u_1792243956568_s92a8g",
+      "type": "transfer_in",
+      "amount": 20000,
+      "balanceAfter": 120000,
+      "description": "@sardor_gamer dan pul o'tkazmasi qabul qilindi",
+      "status": "completed",
+      "provider": "FC Hamyon",
+      "createdAt": "2026-10-24T08:46:23.084Z"
+    },
+    {
+      "id": "tx_1792831583080_rq0ilq",
+      "userId": "u_buyer_1",
+      "type": "transfer_out",
+      "amount": -20000,
+      "balanceAfter": 1530000,
+      "description": "@Abdulaziz ga pul o'tkazildi",
+      "status": "completed",
+      "provider": "FC Hamyon",
+      "createdAt": "2026-10-24T08:46:23.080Z"
+    },
+    {
+      "id": "tx_1792831582945_ou50bx",
+      "userId": "u_buyer_1",
+      "type": "topup",
+      "amount": 50000,
+      "balanceAfter": 1550000,
+      "description": "Hisob to'ldirildi (Payme)",
+      "status": "completed",
+      "provider": "Payme",
+      "createdAt": "2026-10-24T08:46:22.945Z"
+    }
+  ],
   "reviews": []
 }
