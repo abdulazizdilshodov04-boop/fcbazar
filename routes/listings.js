@@ -137,7 +137,9 @@ router.post('/', requireAuth, (req, res) => {
       description,
       topPlayers,
       images,
-      credentials
+      credentials,
+      payoutCard,
+      payoutCardHolder
     } = req.body;
 
     if (!title || !ovr || !price) {
@@ -153,6 +155,9 @@ router.post('/', requireAuth, (req, res) => {
     if (isNaN(priceNum) || priceNum < 0) {
       return res.status(400).json({ error: 'Iltimos, narxni to\'g\'ri kiriting!' });
     }
+
+    const cleanCard = String(payoutCard || req.user.payoutCard || '').replace(/[\s-]/g, '');
+    const cardHolder = (payoutCardHolder || req.user.payoutCardHolder || req.user.username || '').trim();
 
     const newListing = db.createListing({
       title: title.trim(),
@@ -170,12 +175,18 @@ router.post('/', requireAuth, (req, res) => {
       topPlayers: topPlayers || [],
       images: Array.isArray(images) ? images : [],
       credentials: credentials || 'Ma\'lumotlar bitim vaqtida taqdim etiladi',
+      payoutCard: cleanCard,
+      payoutCardHolder: cardHolder,
       sellerId: req.user.id,
       sellerName: req.user.username,
       sellerRating: req.user.rating,
       sellerPhone: req.user.phone,
       sellerTelegram: req.user.telegram
     });
+
+    if (cleanCard) {
+      db.updateUser(req.user.id, { payoutCard: cleanCard, payoutCardHolder: cardHolder });
+    }
 
     res.status(201).json({
       message: 'Akkaunt e\'loni muvaffaqiyatli joylashtirildi!',

@@ -433,6 +433,10 @@
                 <i class="fa-solid fa-phone"></i>
                 <span id="prof-phone">Ko'rsatilmagan</span>
               </div>
+              <div class="info-row">
+                <i class="fa-solid fa-credit-card text-neon"></i>
+                <span id="prof-card">Karta biriktirilmagan</span>
+              </div>
             </div>
 
             <button class="btn btn-outline btn-block mt-3" onclick="app.openEditProfileModal()">
@@ -809,6 +813,33 @@
           <textarea id="sell-credentials" rows="2" placeholder="Masalan: EA Pochta: myacc@ea.com | Parol: secret123"></textarea>
         </div>
 
+        <!-- Payout Bank Card (Where money is transferred upon sale) -->
+        <div class="seller-card-box" style="background: rgba(0, 255, 135, 0.05); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 12px; padding: 16px; margin: 16px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-credit-card text-neon" style="font-size: 1.1rem;"></i>
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Pul tushadigan bank kartangiz (Uzcard / Humo) *</h4>
+            </div>
+            <span style="font-size: 0.72rem; background: rgba(0,255,135,0.15); color: #00ff87; padding: 2px 8px; border-radius: 4px; font-weight: 700;">Avtomatik to'lov</span>
+          </div>
+          <p style="font-size: 0.8rem; color: #8b9bb4; margin-bottom: 12px; line-height: 1.4;">
+            Akkaunt sotilib, xaridor qabul qilgach, savdo summasi to'g'ridan-to'g'ri ushbu kartangizga o'tkaziladi.
+          </p>
+          <div class="form-grid-2">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.82rem;">Karta raqami (16 ta raqam) *</label>
+              <div style="position: relative;">
+                <input type="text" id="sell-card-number" required placeholder="8600 0000 0000 0000" maxlength="19" oninput="app.formatCardNumber(this)" style="font-family: monospace; font-size: 1rem; letter-spacing: 1px;">
+                <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.72rem; color: #00ff87; font-weight: 700;">Uzcard / Humo</span>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.82rem;">Karta egasi (Ism Familiya) *</label>
+              <input type="text" id="sell-card-holder" required placeholder="Masalan: ABDULAZIZ AKROMOV" style="text-transform: uppercase;">
+            </div>
+          </div>
+        </div>
+
         <div class="modal-footer-actions">
           <button type="button" class="btn btn-outline" onclick="app.closeModal('modal-sell')">Bekor qilish</button>
           <button type="submit" class="btn btn-neon-sell btn-lg" id="btn-submit-listing">
@@ -1001,6 +1032,14 @@
         <div class="form-group">
           <label>Avatar rasmi URL</label>
           <input type="text" id="edit-avatar" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label>Pul tushadigan karta (Uzcard / Humo)</label>
+          <input type="text" id="edit-card-number" placeholder="8600 0000 0000 0000" maxlength="19" oninput="app.formatCardNumber(this)">
+        </div>
+        <div class="form-group">
+          <label>Karta egasi (Ism Familiya)</label>
+          <input type="text" id="edit-card-holder" placeholder="ABDULAZIZ AKROMOV" style="text-transform: uppercase;">
         </div>
         <button type="submit" class="btn btn-primary btn-block btn-lg">
           Saqlash

@@ -677,6 +677,19 @@ const app = {
     if (!this.requireLoginPrompt()) return;
     this.state.uploadedImages = [];
     document.getElementById('sell-uploaded-previews').innerHTML = '';
+
+    // Auto-fill payout card if saved
+    if (this.state.user) {
+      const cardInput = document.getElementById('sell-card-number');
+      const holderInput = document.getElementById('sell-card-holder');
+      if (cardInput && this.state.user.payoutCard) {
+        cardInput.value = this.state.user.payoutCard.replace(/(\d{4})(?=\d)/g, '$1 ');
+      }
+      if (holderInput && (this.state.user.payoutCardHolder || this.state.user.username)) {
+        holderInput.value = (this.state.user.payoutCardHolder || this.state.user.username).toUpperCase();
+      }
+    }
+
     this.openModal('modal-sell');
   },
 
@@ -722,6 +735,17 @@ const app = {
     const topPlayers = document.getElementById('sell-top-players').value;
     const description = document.getElementById('sell-desc').value.trim();
     const credentials = document.getElementById('sell-credentials').value.trim();
+    const rawCard = (document.getElementById('sell-card-number')?.value || '').replace(/[\s-]/g, '');
+    const cardHolder = (document.getElementById('sell-card-holder')?.value || '').trim();
+
+    if (!rawCard || rawCard.length < 16) {
+      this.showToast('Akkaunt sotilganda pul tushishi uchun 16 xonali karta raqamingizni kiriting!', 'error');
+      return;
+    }
+    if (!cardHolder) {
+      this.showToast('Karta egasining ism va familiyasini kiriting!', 'error');
+      return;
+    }
 
     try {
       btn.disabled = true;
@@ -741,10 +765,19 @@ const app = {
         topPlayers,
         description,
         credentials,
+        payoutCard: rawCard,
+        payoutCardHolder: cardHolder,
         images: Array.isArray(this.state.uploadedImages) && this.state.uploadedImages.length > 0 ? this.state.uploadedImages : []
       };
 
       await API.listings.create(listingData);
+
+      // Save to active state so user doesn't have to re-enter
+      if (this.state.user) {
+        this.state.user.payoutCard = rawCard;
+        this.state.user.payoutCardHolder = cardHolder;
+        API.setUser(this.state.user);
+      }
 
       this.closeModal('modal-sell');
       this.showToast('Akkauntingiz 24/7 savdo bozoriga muvaffaqiyatli joylashtirildi! 🎉', 'success');
@@ -952,8 +985,40 @@ const app = {
           </div>
         </div>
 
+        <!-- Payout Bank Card Details -->
+        ${(() => {
+          const rawCard = String(deal.payoutCard || (isSeller ? this.state.user?.payoutCard : '') || '').replace(/[\s-]/g, '');
+          const maskedCard = rawCard.length >= 16 
+            ? `${rawCard.substring(0, 4)} **** **** ${rawCard.substring(rawCard.length - 4)}` 
+            : 'Karta kiritilmagan';
+          const holderName = (deal.payoutCardHolder || (isSeller ? (this.state.user?.payoutCardHolder || this.state.user?.username) : (deal.sellerName || 'Sotuvchi')) || '').toUpperCase();
+
+          return `
+            <div style="background: rgba(0, 255, 135, 0.05); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 8px; padding: 12px; margin-top: 16px;">
+              <div style="font-size: 0.78rem; color: #8b9bb4; display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-credit-card text-neon"></i> Pul tushadigan karta:</span>
+                <span style="font-size: 0.72rem; color: #00ff87; font-weight: 700;">Uzcard / Humo</span>
+              </div>
+              <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: #fff; margin-top: 5px; letter-spacing: 1px;">
+                ${maskedCard}
+              </div>
+              <div style="font-size: 0.75rem; color: #00ff87; margin-top: 2px; font-weight: 600;">
+                ${holderName}
+              </div>
+              <div style="font-size: 0.72rem; color: #8b9bb4; margin-top: 4px; line-height: 1.3;">
+                ${deal.status === 'completed' ? '✅ Mablag\' to\'g\'ridan-to\'g\'ri kartaga o\'tkazilgan' : '⚡ Xaridor tasdiqlaganda mablag\' darhol kartaga o\'tadi'}
+              </div>
+              ${isSeller && deal.status !== 'completed' ? `
+                <button class="btn btn-outline btn-sm" onclick="app.promptUpdatePayoutCard('${deal.id}')" style="margin-top: 8px; width: 100%; font-size: 0.75rem; padding: 5px 8px;">
+                  <i class="fa-solid fa-pen-to-square"></i> Kartani kiritish / o'zgartirish
+                </button>
+              ` : ''}
+            </div>
+          `;
+        })()}
+
         <!-- ACTION BUTTONS -->
-        <div style="margin-top:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
           ${isSeller && deal.status === 'escrow_hold' ? `
             <button class="btn btn-primary btn-block" onclick="app.promptSellerSendCredentials('${deal.id}')">
               <i class="fa-solid fa-key"></i> Login va Parolni Yuborish
@@ -1065,18 +1130,54 @@ const app = {
     }
   },
 
+  async promptUpdatePayoutCard(dealId) {
+    const current = this.state.currentDeal?.payoutCard || this.state.user?.payoutCard || '';
+    const cardNum = prompt("Mablag' tushishi uchun 16 xonali karta raqamini kiriting (Uzcard / Humo):", current);
+    if (!cardNum) return;
+    const clean = cardNum.replace(/[\s-]/g, '');
+    if (clean.length < 16) {
+      this.showToast('Karta raqami kamida 16 xonali bo\'lishi shart!', 'error');
+      return;
+    }
+    const currentHolder = this.state.currentDeal?.payoutCardHolder || this.state.user?.payoutCardHolder || this.state.user?.username || '';
+    const holder = prompt("Karta egasining ism va familiyasini kiriting:", currentHolder);
+    if (!holder) return;
+
+    try {
+      this.showToast('Karta saqlanmoqda...', 'info');
+      await API.deals.updatePayoutCard(dealId, clean, holder.trim());
+      if (this.state.user) {
+        this.state.user.payoutCard = clean;
+        this.state.user.payoutCardHolder = holder.trim();
+        API.setUser(this.state.user);
+      }
+      this.showToast('Karta ma\'lumotlari saqlandi!', 'success');
+      const updated = await API.deals.getById(dealId);
+      this.state.currentDeal = updated.deal;
+      this.renderDealRoom(updated.deal);
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
+  },
+
   async confirmDealAndRelease(dealId) {
+    const deal = this.state.currentDeal;
+    const rawCard = String(deal?.payoutCard || '').replace(/[\s-]/g, '');
+    const cardText = rawCard.length >= 16 
+      ? `sotuvchining (${rawCard.substring(0, 4)} **** **** ${rawCard.substring(rawCard.length - 4)}) kartasiga` 
+      : 'sotuvchining bank kartasiga';
+
     const confirmed = confirm(
       "DIQQAT! Akkauntga kirib barcha ma'lumotlarni tekshirganingizga va parollarni o'zgartirganingizga ishonchingiz komilmi?\n\n" +
-      "Tasdiqlaganingizdan so'ng pul Garant hisobidan to'g'ridan-to'g'ri sotuvchiga o'tkaziladi va bu amalni bekor qilib bo'lmaydi!"
+      `Tasdiqlashingiz bilan ${(deal?.price || 0).toLocaleString()} so'm mablag' to'g'ridan-to'g'ri ${cardText} o'tkaziladi va bitim yakunlanadi!`
     );
 
     if (!confirmed) return;
 
     try {
-      this.showToast('Bitim yakunlanmoqda...', 'info');
-      await API.deals.confirm(dealId);
-      this.showToast('Tabriklaymiz! Bitim muvaffaqiyatli yakunlandi va pul sotuvchiga topshirildi 🎉', 'success');
+      this.showToast('Bitim yakunlanmoqda va mablag\' kartaga o\'tkazilmoqda...', 'info');
+      const res = await API.deals.confirm(dealId);
+      this.showToast(res.message || 'Tabriklaymiz! Bitim muvaffaqiyatli yakunlandi va pul sotuvchiga topshirildi 🎉', 'success');
 
       const updated = await API.deals.getById(dealId);
       this.state.currentDeal = updated.deal;
@@ -1347,6 +1448,16 @@ const app = {
       document.getElementById('prof-phone').textContent = this.state.user.phone || 'Ko\'rsatilmagan';
       document.getElementById('prof-balance-amount').textContent = (this.state.user.balance || 0).toLocaleString() + " so'm";
 
+      const rawCard = String(this.state.user.payoutCard || '').replace(/[\s-]/g, '');
+      const profCardEl = document.getElementById('prof-card');
+      if (profCardEl) {
+        if (rawCard && rawCard.length >= 16) {
+          profCardEl.innerHTML = `<span style="color:#00ff87; font-family:monospace; font-weight:700;">${rawCard.substring(0,4)} **** **** ${rawCard.substring(rawCard.length - 4)}</span>`;
+        } else {
+          profCardEl.textContent = 'Karta biriktirilmagan';
+        }
+      }
+
       this.loadMyListings();
       this.loadTransactions();
     } catch (err) {
@@ -1422,10 +1533,17 @@ const app = {
 
       tbody.innerHTML = list.map(tx => {
         const isPositive = tx.amount > 0;
+        let badgeType = tx.type;
+        if (tx.type === 'card_payout') badgeType = '💳 Kartaga Tushdi';
+        else if (tx.type === 'topup') badgeType = '📥 To\'ldirish';
+        else if (tx.type === 'withdraw') badgeType = '📤 Yechib olish';
+        else if (tx.type === 'escrow_lock') badgeType = '🔒 Garant Depozit';
+        else if (tx.type === 'escrow_release') badgeType = '🎉 Bitim Daromadi';
+
         return `
           <tr>
             <td>${new Date(tx.createdAt).toLocaleDateString()} ${new Date(tx.createdAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit'})}</td>
-            <td><span style="text-transform:uppercase; font-size:0.75rem; font-weight:700;">${tx.type}</span></td>
+            <td><span style="font-size:0.75rem; font-weight:700; color:#00ff87;">${badgeType}</span></td>
             <td style="font-weight:700; color:${isPositive ? '#00ff87' : '#ff3b5c'};">
               ${isPositive ? '+' : ''}${tx.amount.toLocaleString()} so'm
             </td>
@@ -1443,6 +1561,14 @@ const app = {
     document.getElementById('edit-phone').value = this.state.user.phone || '';
     document.getElementById('edit-telegram').value = this.state.user.telegram || '';
     document.getElementById('edit-avatar').value = this.state.user.avatar || '';
+    const cardInput = document.getElementById('edit-card-number');
+    const holderInput = document.getElementById('edit-card-holder');
+    if (cardInput) {
+      cardInput.value = (this.state.user.payoutCard || '').replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+    if (holderInput) {
+      holderInput.value = (this.state.user.payoutCardHolder || this.state.user.username || '').toUpperCase();
+    }
     this.openModal('modal-edit-profile');
   },
 
@@ -1451,9 +1577,17 @@ const app = {
     const phone = document.getElementById('edit-phone').value.trim();
     const telegram = document.getElementById('edit-telegram').value.trim();
     const avatar = document.getElementById('edit-avatar').value.trim();
+    const rawCard = (document.getElementById('edit-card-number')?.value || '').replace(/[\s-]/g, '');
+    const cardHolder = (document.getElementById('edit-card-holder')?.value || '').trim();
 
     try {
-      const res = await API.auth.updateProfile({ phone, telegram, avatar });
+      const res = await API.auth.updateProfile({ 
+        phone, 
+        telegram, 
+        avatar, 
+        payoutCard: rawCard, 
+        payoutCardHolder: cardHolder 
+      });
       this.state.user = res.user;
       API.setUser(res.user);
       this.updateAuthUI();

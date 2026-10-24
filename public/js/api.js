@@ -159,6 +159,12 @@ const API = {
         method: 'POST'
       }),
 
+    updatePayoutCard: (dealId, cardNumber, cardHolder) =>
+      API.request(`/deals/${dealId}/update-payout-card`, {
+        method: 'POST',
+        body: JSON.stringify({ cardNumber, cardHolder })
+      }),
+
     dispute: (dealId, reason) =>
       API.request(`/deals/${dealId}/dispute`, {
         method: 'POST',

@@ -135,11 +135,17 @@ router.get('/me', requireAuth, (req, res) => {
 // Update Profile
 router.put('/profile', requireAuth, (req, res) => {
   try {
-    const { phone, telegram, avatar } = req.body;
+    const { phone, telegram, avatar, payoutCard, payoutCardHolder } = req.body;
     const updates = {};
     if (phone !== undefined) updates.phone = phone;
     if (telegram !== undefined) updates.telegram = telegram;
     if (avatar !== undefined) updates.avatar = avatar;
+    if (payoutCard !== undefined) {
+      updates.payoutCard = String(payoutCard).replace(/[\s-]/g, '');
+    }
+    if (payoutCardHolder !== undefined) {
+      updates.payoutCardHolder = payoutCardHolder.trim();
+    }
 
     const updated = db.updateUser(req.user.id, updates);
     const { password: _, ...userSafe } = updated;

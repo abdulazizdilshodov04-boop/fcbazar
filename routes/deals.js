@@ -70,6 +70,10 @@ router.post('/start', requireAuth, (req, res) => {
     db.updateListing(listing.id, { status: 'pending_escrow' });
 
     // 3. Create Deal
+    const seller = db.getUserById(listing.sellerId);
+    const payoutCard = listing.payoutCard || seller?.payoutCard || '';
+    const payoutCardHolder = listing.payoutCardHolder || seller?.payoutCardHolder || seller?.username || '';
+
     const deal = db.createDeal({
       listingId: listing.id,
       listingTitle: listing.title,
@@ -80,7 +84,9 @@ router.post('/start', requireAuth, (req, res) => {
       buyerName: buyer.username,
       sellerId: listing.sellerId,
       sellerName: listing.sellerName,
-      credentialsProvided: listing.credentials || ''
+      credentialsProvided: listing.credentials || '',
+      payoutCard,
+      payoutCardHolder
     });
 
     // 4. Record Transaction
@@ -95,10 +101,15 @@ router.post('/start', requireAuth, (req, res) => {
     });
 
     // Add initial automated instructions
+    const rawCard = String(payoutCard).replace(/[\s-]/g, '');
+    const cardMasked = rawCard.length >= 16 
+      ? `${rawCard.substring(0, 4)} **** **** ${rawCard.substring(rawCard.length - 4)}` 
+      : 'bank kartangizga';
+
     db.addDealMessage(deal.id, {
       sender: 'system',
       senderName: 'Garant Xizmati',
-      text: `Hurmatli @${listing.sellerName}! Akkauntingiz sotib olindi. Iltimos, akkaunt login va parolini quyidagi chat orqali xaridorga yetkazing. Xaridor tekshirib tasdiqlaganidan so'ng ${listing.price.toLocaleString()} so'm balansingizga o'tkaziladi.`
+      text: `Hurmatli @${listing.sellerName}! Akkauntingiz sotib olindi. Iltimos, akkaunt login va parolini quyidagi chat orqali xaridorga yetkazing. Xaridor tekshirib tasdiqlaganidan so'ng ${listing.price.toLocaleString()} so'm mablag' to'g'ridan-to'g'ri kartangizga (${cardMasked}) o'tkaziladi.`
     });
 
     res.status(201).json({
@@ -175,8 +186,9 @@ router.post('/:id/confirm', requireAuth, (req, res) => {
     // 2. Mark listing sold
     db.updateListing(deal.listingId, { status: 'sold' });
 
-    // 3. Credit seller balance
+    // 3. Credit seller and send direct card payout
     const seller = db.getUserById(deal.sellerId);
+    let cardInfoText = '';
     if (seller) {
       const newSellerBalance = (seller.balance || 0) + deal.price;
       const newDealsCount = (seller.dealsCompleted || 0) + 1;
@@ -185,15 +197,23 @@ router.post('/:id/confirm', requireAuth, (req, res) => {
         dealsCompleted: newDealsCount
       });
 
-      // Record seller transaction
+      const rawCard = String(deal.payoutCard || seller.payoutCard || seller.savedCard || '').replace(/[\s-]/g, '');
+      const maskedCard = rawCard.length >= 16 
+        ? `${rawCard.substring(0, 4)} **** **** ${rawCard.substring(rawCard.length - 4)}` 
+        : 'Bank Kartasi (Uzcard/Humo)';
+      const holderName = (deal.payoutCardHolder || seller.payoutCardHolder || seller.username || '').toUpperCase();
+
+      cardInfoText = `${maskedCard} (${holderName})`;
+
+      // Record seller card payout transaction
       db.createTransaction({
         userId: seller.id,
-        type: 'escrow_release',
+        type: 'card_payout',
         amount: deal.price,
         balanceAfter: newSellerBalance,
-        description: `Akkaunt savdosi #${deal.id.substr(0, 8)} muvaffaqiyatli yakunlandi (${deal.listingTitle})`,
+        description: `Akkaunt savdosi #${deal.id.substr(0, 8)} muvaffaqiyatli yakunlandi! Mablag' ${cardInfoText} kartasiga to'g'ridan-to'g'ri o'tkazildi (${deal.listingTitle})`,
         status: 'completed',
-        provider: 'Garant Escrow'
+        provider: 'Uzcard/Humo Kartaga O\'tkazma'
       });
     }
 
@@ -208,14 +228,60 @@ router.post('/:id/confirm', requireAuth, (req, res) => {
     // Notify in deal chat
     db.addDealMessage(deal.id, {
       sender: 'system',
-      senderName: 'Garant Xizmati',
-      text: `🎉 Tabriklaymiz! Xaridor akkauntni qabul qildi va tasdiqladi. ${deal.price.toLocaleString()} so'm mablag' sotuvchining hisobiga muvaffaqiyatli o'tkazildi!`
+      senderName: 'Garant To\'lov Xizmati',
+      text: `🎉 TABRIKLAYMIZ! Xaridor akkauntni qabul qildi va tasdiqladi.\n\n💳 ${deal.price.toLocaleString()} so'm mablag' sotuvchining kartasiga (${cardInfoText || 'Uzcard/Humo'}) to'g'ridan-to'g'ri o'tkazildi!\n\nBitim muvaffaqiyatli yakunlandi.`
     });
 
-    res.json({ message: 'Bitim muvaffaqiyatli yakunlandi! Mablag\' sotuvchiga o\'tkazildi.', dealId: deal.id });
+    res.json({
+      message: `Bitim muvaffaqiyatli yakunlandi! ${deal.price.toLocaleString()} so'm mablag' sotuvchining kartasiga o'tkazildi.`,
+      dealId: deal.id
+    });
   } catch (err) {
     console.error('Confirm deal error:', err);
     res.status(500).json({ error: 'Bitimni tasdiqlashda xatolik yuz berdi' });
+  }
+});
+
+// SELLER UPDATES PAYOUT CARD IN ACTIVE DEAL
+router.post('/:id/update-payout-card', requireAuth, (req, res) => {
+  try {
+    const { cardNumber, cardHolder } = req.body || {};
+    const deal = db.getDealById(req.params.id);
+
+    if (!deal) {
+      return res.status(404).json({ error: 'Bitim topilmadi' });
+    }
+
+    if (deal.sellerId !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Faqat sotuvchi kartani o\'zgartira oladi' });
+    }
+
+    const clean = String(cardNumber || '').replace(/[\s-]/g, '');
+    if (clean.length < 16) {
+      return res.status(400).json({ error: '16 xonali karta raqami kiriting (masalan: 8600...)' });
+    }
+
+    const holder = (cardHolder || req.user.username).trim();
+    db.updateDeal(deal.id, {
+      payoutCard: clean,
+      payoutCardHolder: holder
+    });
+
+    db.updateUser(req.user.id, {
+      payoutCard: clean,
+      payoutCardHolder: holder
+    });
+
+    const masked = `${clean.substring(0, 4)} **** **** ${clean.substring(clean.length - 4)}`;
+    db.addDealMessage(deal.id, {
+      sender: 'system',
+      senderName: 'Garant Tizimi',
+      text: `💳 Sotuvchi mablag' tushadigan kartasini yangiladi: ${masked} (${holder.toUpperCase()})`
+    });
+
+    res.json({ message: 'Karta muvaffaqiyatli saqlandi!', payoutCard: clean });
+  } catch (err) {
+    res.status(500).json({ error: 'Karta saqlashda xatolik yuz berdi' });
   }
 });
 

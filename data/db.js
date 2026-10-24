@@ -242,6 +242,8 @@ class Database {
       sellerRating: listingData.sellerRating || 5.0,
       sellerPhone: listingData.sellerPhone || '',
       sellerTelegram: listingData.sellerTelegram || '',
+      payoutCard: listingData.payoutCard || '',
+      payoutCardHolder: listingData.payoutCardHolder || '',
       status: 'active', // active, pending_escrow, sold, deleted
       views: 0,
       isFeatured: listingData.isFeatured || false,
@@ -297,6 +299,8 @@ class Database {
       buyerName: dealData.buyerName,
       sellerId: dealData.sellerId,
       sellerName: dealData.sellerName,
+      payoutCard: dealData.payoutCard || '',
+      payoutCardHolder: dealData.payoutCardHolder || '',
       status: 'escrow_hold', // escrow_hold -> credentials_sent -> verified_by_buyer -> completed OR dispute -> cancelled
       credentialsProvided: dealData.credentialsProvided || '',
       messages: [
