@@ -314,6 +314,66 @@ router.post('/:id/dispute', requireAuth, (req, res) => {
   }
 });
 
+// CANCEL DEAL & REFUND FROZEN MONEY
+router.post('/:id/cancel', requireAuth, (req, res) => {
+  try {
+    const deal = db.getDealById(req.params.id);
+    if (!deal) return res.status(404).json({ error: 'Bitim topilmadi' });
+
+    const isBuyer = deal.buyerId === req.user.id;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isBuyer && !isAdmin) {
+      return res.status(403).json({ error: 'Faqat xaridor yoki admin bitimni bekor qila oladi' });
+    }
+
+    if (deal.status === 'completed') {
+      return res.status(400).json({ error: 'Bu bitim allaqachon yakunlangan, bekor qilib bo\'lmaydi' });
+    }
+
+    if (deal.status === 'cancelled') {
+      return res.status(400).json({ error: 'Bu bitim allaqachon bekor qilingan' });
+    }
+
+    // Cancel deal and restore listing to market
+    db.updateDeal(deal.id, { status: 'cancelled' });
+    db.updateListing(deal.listingId, { status: 'active' });
+
+    // Refund full amount to buyer balance
+    const buyer = db.getUserById(deal.buyerId);
+    let newBalance = 0;
+    if (buyer) {
+      newBalance = (buyer.balance || 0) + deal.price;
+      db.updateUser(buyer.id, { balance: newBalance });
+      db.createTransaction({
+        userId: buyer.id,
+        type: 'escrow_refund',
+        amount: deal.price,
+        balanceAfter: newBalance,
+        description: `Bitim #${deal.id.substr(0, 8)} bekor qilindi va ${deal.price.toLocaleString()} so'm mablag' balansingizga to'liq qaytarildi (${deal.listingTitle})`,
+        status: 'completed',
+        provider: 'Garant Qaytarish'
+      });
+    }
+
+    // Add notification in deal chat
+    db.addDealMessage(deal.id, {
+      sender: 'system',
+      senderName: 'Garant Hakamligi',
+      text: `🔄 BITIM BEKOR QILINDI!\n\n⚖️ Bitim bekor qilindi va muzlatilgan ${deal.price.toLocaleString()} so'm mablag' xaridor @${deal.buyerName} hisobiga to'liq qaytarildi.`
+    });
+
+    res.json({
+      message: `Bitim bekor qilindi va ${deal.price.toLocaleString()} so'm xaridorga to'liq qaytarildi!`,
+      dealId: deal.id,
+      newBalance
+    });
+  } catch (err) {
+    console.error('Cancel deal error:', err);
+    res.status(500).json({ error: 'Bitimni bekor qilishda xatolik yuz berdi' });
+  }
+});
+
 // SEND MESSAGE IN DEAL CHAT
 router.post('/:id/message', requireAuth, (req, res) => {
   try {

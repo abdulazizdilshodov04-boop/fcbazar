@@ -171,6 +171,11 @@ const API = {
         body: JSON.stringify({ reason })
       }),
 
+    cancel: (dealId) =>
+      API.request(`/deals/${dealId}/cancel`, {
+        method: 'POST'
+      }),
+
     sendMessage: (dealId, text) =>
       API.request(`/deals/${dealId}/message`, {
         method: 'POST',

@@ -1041,6 +1041,51 @@ const app = {
             </button>
           ` : ''}
 
+          ${isBuyer && deal.status === 'escrow_hold' ? `
+            <button class="btn btn-outline btn-block text-muted" onclick="app.cancelDealBuyer('${deal.id}')" style="font-size: 0.82rem;">
+              <i class="fa-solid fa-ban"></i> Bitimni bekor qilish (Pulni qaytarish)
+            </button>
+          ` : ''}
+
+          ${deal.status === 'dispute' ? `
+            <div style="background: rgba(255, 59, 92, 0.1); border: 1px solid rgba(255, 59, 92, 0.4); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 0.86rem; font-weight: 700; color: #ff3b5c; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Bitim Muzlatilgan (Arbitraj)
+              </div>
+              <p style="font-size: 0.78rem; color: #8b9bb4; margin: 6px 0 10px; line-height: 1.4;">
+                ${deal.price.toLocaleString()} so'm mablag' Garant xavfsiz hisobida muzlatilgan.
+              </p>
+              ${isBuyer ? `
+                <button class="btn btn-outline btn-block btn-sm text-danger" onclick="app.cancelDealBuyer('${deal.id}')">
+                  <i class="fa-solid fa-rotate-left"></i> Bitimni Bekor Qilish & Pulni Qaytarib Olish
+                </button>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          ${isAdmin && (deal.status === 'dispute' || deal.status === 'escrow_hold' || deal.status === 'credentials_sent') ? `
+            <div style="background: rgba(255, 184, 0, 0.1); border: 1px solid rgba(255, 184, 0, 0.4); border-radius: 8px; padding: 12px; margin-top: 6px;">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #ffb800; margin-bottom: 8px;">
+                <i class="fa-solid fa-crown"></i> Admin Hakamlik Paneli:
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-danger btn-block btn-sm" onclick="app.adminResolveDeal('${deal.id}', 'refund_buyer')">
+                  <i class="fa-solid fa-rotate-left"></i> Pulni Xaridorga Qaytarish (Refund)
+                </button>
+                <button class="btn btn-primary btn-block btn-sm" onclick="app.adminResolveDeal('${deal.id}', 'release_seller')">
+                  <i class="fa-solid fa-circle-check"></i> Pulni Sotuvchiga O'tkazish
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          ${deal.status === 'cancelled' ? `
+            <div style="background: rgba(139, 155, 180, 0.1); border: 1px solid rgba(139, 155, 180, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+              <span style="color: #ff3b5c; font-weight: 700; font-size: 0.9rem;"><i class="fa-solid fa-ban"></i> Bitim Bekor Qilingan</span>
+              <p style="font-size: 0.78rem; color: #8b9bb4; margin-top: 4px;">Mablag' xaridor hisobiga to'liq qaytarilgan.</p>
+            </div>
+          ` : ''}
+
           ${deal.status === 'completed' && isBuyer ? `
             <button class="btn btn-outline btn-block text-gold" onclick="app.promptLeaveReview('${deal.id}')">
               <i class="fa-solid fa-star"></i> Sotuvchiga Baho Berish
@@ -1202,6 +1247,58 @@ const app = {
       const updated = await API.deals.getById(dealId);
       this.state.currentDeal = updated.deal;
       this.renderDealRoom(updated.deal);
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
+  },
+
+  async adminResolveDeal(dealId, decision) {
+    const isRefund = decision === 'refund_buyer';
+    const textPrompt = isRefund 
+      ? "Bitimni bekor qilib, muzlatilgan mablag'ni to'liq xaridor hisobiga qaytarmoqchimisiz?" 
+      : "Mablag'ni sotuvchining kartasiga o'tkazib, bitimni yakunlamoqchimisiz?";
+    if (!confirm(textPrompt)) return;
+
+    try {
+      this.showToast('Hakamlik qarori bajarilmoqda...', 'info');
+      const res = await API.admin.resolveDispute(dealId, decision, 'Moderator qarori');
+      this.showToast(res.message || 'Qaror muvaffaqiyatli qabul qilindi!', 'success');
+
+      // Refresh deal
+      const updated = await API.deals.getById(dealId);
+      this.state.currentDeal = updated.deal;
+      this.renderDealRoom(updated.deal);
+      
+      // Update local balance
+      const me = await API.auth.me();
+      this.state.user = me.user;
+      API.setUser(me.user);
+      this.updateAuthUI();
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
+  },
+
+  async cancelDealBuyer(dealId) {
+    const confirmed = confirm(
+      "DIQQAT! Ushbu bitimni bekor qilib, Garantda muzlatilgan mablag'ni hisobingizga to'liq qaytarib olmoqchimisiz?"
+    );
+    if (!confirmed) return;
+
+    try {
+      this.showToast('Bitim bekor qilinmoqda va mablag\' qaytarilmoqda...', 'info');
+      const res = await API.deals.cancel(dealId);
+      this.showToast(res.message || 'Bitim bekor qilindi va pul qaytarildi!', 'success');
+
+      const updated = await API.deals.getById(dealId);
+      this.state.currentDeal = updated.deal;
+      this.renderDealRoom(updated.deal);
+
+      // Update local balance
+      const me = await API.auth.me();
+      this.state.user = me.user;
+      API.setUser(me.user);
+      this.updateAuthUI();
     } catch (err) {
       this.showToast(err.message, 'error');
     }

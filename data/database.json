@@ -1,7 +1,422 @@
 {
-  "users": [],
-  "listings": [],
-  "deals": [],
-  "transactions": [],
-  "reviews": []
+  "users": [
+    {
+      "id": "u_1792834831487_5o8y3v",
+      "username": "Abdulaziz",
+      "email": "abdulaziz.akromov7777@gmail.com",
+      "password": "$2b$10$Oud.n3F.F8PxjhydxbVf/.XFInT/NCbgkUfVvVxCzYcdOF3pPPIFu",
+      "phone": "+998 98 300 90 80",
+      "telegram": "@abdulazizdilshodov",
+      "role": "admin",
+      "balance": 1600000,
+      "frozenBalance": 0,
+      "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Abdulaziz",
+      "rating": 5,
+      "reviewCount": 2,
+      "dealsCompleted": 1,
+      "isVerified": true,
+      "createdAt": "2026-10-24T09:40:31.490Z",
+      "payoutCard": "9987100049613595",
+      "payoutCardHolder": "ABDULAZIZ"
+    },
+    {
+      "id": "u_1792835263776_bei109",
+      "username": "Umar",
+      "email": "abdulazizdilshodov04@gmail.com",
+      "password": "$2b$10$4u6lQVL9mViTglT8wlAkuuRxvxZzW0oa9IHvmN6rFDfwmP0MUaTYi",
+      "phone": "+998 98 300 90 80",
+      "telegram": "@abdulazizdilshodov",
+      "role": "admin",
+      "balance": 1356889,
+      "frozenBalance": 0,
+      "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Umar",
+      "rating": 5,
+      "reviewCount": 0,
+      "dealsCompleted": 1,
+      "isVerified": true,
+      "createdAt": "2026-10-24T09:47:43.776Z"
+    }
+  ],
+  "listings": [
+    {
+      "id": "item_1792838110691_w1hmg2",
+      "title": "Akkaunt tezroq oling",
+      "ovr": 123,
+      "teamValue": "750M Tanga",
+      "level": 25,
+      "coins": "35,000,000",
+      "gems": "8,000",
+      "fcPoints": "0",
+      "formation": "4-3-3 Attack",
+      "region": "Global / O'zbekiston",
+      "bindingType": "EA Account",
+      "price": 1300000,
+      "currency": "UZS",
+      "description": "",
+      "topPlayers": [],
+      "images": [],
+      "credentials": "akromovaumida67@gmail.com Parol:Aa_11012011",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "sellerRating": 5,
+      "sellerPhone": "+998 98 300 90 80",
+      "sellerTelegram": "@abdulazizdilshodov",
+      "payoutCard": "9987100049613595",
+      "payoutCardHolder": "ABDULAZIZ",
+      "status": "active",
+      "views": 1,
+      "isFeatured": false,
+      "createdAt": "2026-10-24T10:35:10.691Z"
+    },
+    {
+      "id": "item_1792836816350_ej0r7q",
+      "title": "Akkaunt tezroq oling",
+      "ovr": 123,
+      "teamValue": "750M Tanga",
+      "level": 76,
+      "coins": "35,000,000",
+      "gems": "8,000",
+      "fcPoints": "0",
+      "formation": "4-3-3 Attack",
+      "region": "Global / O'zbekiston",
+      "bindingType": "EA Account",
+      "price": 100000,
+      "currency": "UZS",
+      "description": "",
+      "topPlayers": [
+        "Ronaldo R9 (104)",
+        "Gullit (103)",
+        "Mbappe (102)"
+      ],
+      "images": [],
+      "credentials": "Ma'lumotlar bitim vaqtida taqdim etiladi",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "sellerRating": 5,
+      "sellerPhone": "+998 98 300 90 80",
+      "sellerTelegram": "@abdulazizdilshodov",
+      "status": "sold",
+      "views": 1,
+      "isFeatured": false,
+      "createdAt": "2026-10-24T10:13:36.351Z"
+    },
+    {
+      "id": "item_1792834928619_rq2sga",
+      "title": "Akkaunt tezroq oling",
+      "ovr": 124,
+      "teamValue": "750M Tanga",
+      "level": 46,
+      "coins": "35,000,000",
+      "gems": "8,000",
+      "fcPoints": "0",
+      "formation": "4-3-3 Attack",
+      "region": "Global / O'zbekiston",
+      "bindingType": "EA Account",
+      "price": 43111,
+      "currency": "UZS",
+      "description": "",
+      "topPlayers": [],
+      "images": [],
+      "credentials": "Ma'lumotlar bitim vaqtida taqdim etiladi",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "sellerRating": 5,
+      "sellerPhone": "+998 98 300 90 80",
+      "sellerTelegram": "@abdulazizdilshodov",
+      "status": "pending_escrow",
+      "views": 1,
+      "isFeatured": false,
+      "createdAt": "2026-10-24T09:42:08.619Z"
+    }
+  ],
+  "deals": [
+    {
+      "id": "deal_1792838147655_4xhss0",
+      "listingId": "item_1792838110691_w1hmg2",
+      "listingTitle": "Akkaunt tezroq oling",
+      "listingOvr": 123,
+      "listingImage": "",
+      "price": 1300000,
+      "buyerId": "u_1792835263776_bei109",
+      "buyerName": "Umar",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "payoutCard": "9987100049613595",
+      "payoutCardHolder": "ABDULAZIZ",
+      "status": "cancelled",
+      "credentialsProvided": "akromovaumida67@gmail.com Parol:Aa_11012011",
+      "messages": [
+        {
+          "id": "msg_1",
+          "sender": "system",
+          "senderName": "FC Bazar Garant Bot",
+          "text": "Xavfsiz bitim boshlandi! 1 300 000 so'm mablag' Garant hisobida xavfsiz muzlatildi. Sotuvchi ma'lumotlarni yuborishi kutilmoqda.",
+          "timestamp": "2026-10-24T10:35:47.787Z"
+        },
+        {
+          "id": "msg_1792838147826",
+          "sender": "system",
+          "senderName": "Garant Xizmati",
+          "text": "Hurmatli @Abdulaziz! Akkauntingiz sotib olindi. Iltimos, akkaunt login va parolini quyidagi chat orqali xaridorga yetkazing. Xaridor tekshirib tasdiqlaganidan so'ng 1 300 000 so'm mablag' to'g'ridan-to'g'ri kartangizga (9987 **** **** 3595) o'tkaziladi.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:35:47.826Z"
+        },
+        {
+          "id": "msg_1792838166368",
+          "sender": "admin",
+          "senderName": "Umar",
+          "senderId": "u_1792835263776_bei109",
+          "text": "akk olmohchiman yana",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:36:06.368Z"
+        },
+        {
+          "id": "msg_1792838232811",
+          "sender": "seller",
+          "senderName": "Abdulaziz",
+          "senderId": "u_1792834831487_5o8y3v",
+          "text": "🔑 AKKAUNT MA'LUMOTLARI:\nakromovaumida67@gmail.com Parol:Aa_11012011\n\nIltimos, o'yinga kirib tekshiring, pochta va parollarni o'zingizga o'zgartiring va bitimni tasdiqlang!",
+          "isCredential": true,
+          "timestamp": "2026-10-24T10:37:12.811Z"
+        },
+        {
+          "id": "msg_1792838266207",
+          "sender": "system",
+          "senderName": "Arbitraj / Shikoyat",
+          "text": "⚠️ DIQQAT! Foydalanuvchi @Umar shikoyat yubordi: \"aaaaa\". Bitim muzlatildi, platforma moderatori aralashmoqda.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:37:46.207Z"
+        },
+        {
+          "id": "msg_refund_1792838147",
+          "sender": "admin",
+          "senderName": "Garant Hakamligi",
+          "text": "⚖️ HAKAMLIK QARORI: Bitim bekor qilindi va 1,300,000 so'm mablag' xaridor @Umar hisobiga to'liq qaytarildi.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:41:00.000Z"
+        }
+      ],
+      "createdAt": "2026-10-24T10:35:47.787Z",
+      "updatedAt": "2026-10-24T10:37:46.207Z"
+    },
+    {
+      "id": "deal_1792836859760_nae7x2",
+      "listingId": "item_1792836816350_ej0r7q",
+      "listingTitle": "Akkaunt tezroq oling",
+      "listingOvr": 123,
+      "listingImage": "",
+      "price": 100000,
+      "buyerId": "u_1792835263776_bei109",
+      "buyerName": "Umar",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "status": "completed",
+      "credentialsProvided": "abdulaziz.akromov@gmail.com",
+      "messages": [
+        {
+          "id": "msg_1",
+          "sender": "system",
+          "senderName": "FC Bazar Garant Bot",
+          "text": "Xavfsiz bitim boshlandi! 100 000 so'm mablag' Garant hisobida xavfsiz muzlatildi. Sotuvchi ma'lumotlarni yuborishi kutilmoqda.",
+          "timestamp": "2026-10-24T10:14:19.766Z"
+        },
+        {
+          "id": "msg_1792836859802",
+          "sender": "system",
+          "senderName": "Garant Xizmati",
+          "text": "Hurmatli @Abdulaziz! Akkauntingiz sotib olindi. Iltimos, akkaunt login va parolini quyidagi chat orqali xaridorga yetkazing. Xaridor tekshirib tasdiqlaganidan so'ng 100 000 so'm balansingizga o'tkaziladi.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:14:19.802Z"
+        },
+        {
+          "id": "msg_1792836874244",
+          "sender": "admin",
+          "senderName": "Umar",
+          "senderId": "u_1792835263776_bei109",
+          "text": "akk olmohchi edim",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:14:34.244Z"
+        },
+        {
+          "id": "msg_1792836908153",
+          "sender": "admin",
+          "senderName": "Abdulaziz",
+          "senderId": "u_1792834831487_5o8y3v",
+          "text": "hop",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:15:08.153Z"
+        },
+        {
+          "id": "msg_1792836928183",
+          "sender": "seller",
+          "senderName": "Abdulaziz",
+          "senderId": "u_1792834831487_5o8y3v",
+          "text": "🔑 AKKAUNT MA'LUMOTLARI:\nabdulaziz.akromov@gmail.com\n\nIltimos, o'yinga kirib tekshiring, pochta va parollarni o'zingizga o'zgartiring va bitimni tasdiqlang!",
+          "isCredential": true,
+          "timestamp": "2026-10-24T10:15:28.183Z"
+        },
+        {
+          "id": "msg_1792836945409",
+          "sender": "admin",
+          "senderName": "Abdulaziz",
+          "senderId": "u_1792834831487_5o8y3v",
+          "text": "Aa_11012011",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:15:45.409Z"
+        },
+        {
+          "id": "msg_1792837033817",
+          "sender": "system",
+          "senderName": "Garant Xizmati",
+          "text": "🎉 Tabriklaymiz! Xaridor akkauntni qabul qildi va tasdiqladi. 100 000 so'm mablag' sotuvchining hisobiga muvaffaqiyatli o'tkazildi!",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:17:13.817Z"
+        }
+      ],
+      "createdAt": "2026-10-24T10:14:19.766Z",
+      "updatedAt": "2026-10-24T10:17:13.817Z"
+    },
+    {
+      "id": "deal_1792835278136_7l3nx6",
+      "listingId": "item_1792834928619_rq2sga",
+      "listingTitle": "Akkaunt tezroq oling",
+      "listingOvr": 124,
+      "listingImage": "",
+      "price": 43111,
+      "buyerId": "u_1792835263776_bei109",
+      "buyerName": "Umar",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "sellerName": "Abdulaziz",
+      "status": "dispute",
+      "credentialsProvided": "Ma'lumotlar bitim vaqtida taqdim etiladi",
+      "messages": [
+        {
+          "id": "msg_1",
+          "sender": "system",
+          "senderName": "FC Bazar Garant Bot",
+          "text": "Xavfsiz bitim boshlandi! 43 111 so'm mablag' Garant hisobida xavfsiz muzlatildi. Sotuvchi ma'lumotlarni yuborishi kutilmoqda.",
+          "timestamp": "2026-10-24T09:47:58.300Z"
+        },
+        {
+          "id": "msg_1792835278307",
+          "sender": "system",
+          "senderName": "Garant Xizmati",
+          "text": "Hurmatli @Abdulaziz! Akkauntingiz sotib olindi. Iltimos, akkaunt login va parolini quyidagi chat orqali xaridorga yetkazing. Xaridor tekshirib tasdiqlaganidan so'ng 43 111 so'm balansingizga o'tkaziladi.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T09:47:58.307Z"
+        },
+        {
+          "id": "msg_1792837072806",
+          "sender": "system",
+          "senderName": "Arbitraj / Shikoyat",
+          "text": "⚠️ DIQQAT! Foydalanuvchi @Umar shikoyat yubordi: \"scam\". Bitim muzlatildi, platforma moderatori aralashmoqda.",
+          "isCredential": false,
+          "timestamp": "2026-10-24T10:17:52.806Z"
+        }
+      ],
+      "createdAt": "2026-10-24T09:47:58.300Z",
+      "updatedAt": "2026-10-24T10:17:52.806Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx_1792838147808_a9nbmr",
+      "userId": "u_1792835263776_bei109",
+      "type": "escrow_lock",
+      "amount": -1300000,
+      "balanceAfter": 56889,
+      "description": "Garant xavfsiz bitimi #deal_179 uchun mablag' ushlab turildi (Akkaunt tezroq oling)",
+      "status": "completed",
+      "provider": "Garant Escrow",
+      "createdAt": "2026-10-24T10:35:47.808Z"
+    },
+    {
+      "id": "tx_1792837033804_3z2sj4",
+      "userId": "u_1792834831487_5o8y3v",
+      "type": "escrow_release",
+      "amount": 100000,
+      "balanceAfter": 1600000,
+      "description": "Akkaunt savdosi #deal_179 muvaffaqiyatli yakunlandi (Akkaunt tezroq oling)",
+      "status": "completed",
+      "provider": "Garant Escrow",
+      "createdAt": "2026-10-24T10:17:13.804Z"
+    },
+    {
+      "id": "tx_1792836859782_awzkcq",
+      "userId": "u_1792835263776_bei109",
+      "type": "escrow_lock",
+      "amount": -100000,
+      "balanceAfter": 1356889,
+      "description": "Garant xavfsiz bitimi #deal_179 uchun mablag' ushlab turildi (Akkaunt tezroq oling)",
+      "status": "completed",
+      "provider": "Garant Escrow",
+      "createdAt": "2026-10-24T10:14:19.782Z"
+    },
+    {
+      "id": "tx_refund_1792838147",
+      "userId": "u_1792835263776_bei109",
+      "type": "escrow_refund",
+      "amount": 1300000,
+      "balanceAfter": 1356889,
+      "description": "Bitim #deal_179 bekor qilindi va 1,300,000 so'm mablag' hisobingizga to'liq qaytarildi (Akkaunt tezroq oling)",
+      "status": "completed",
+      "provider": "Garant Qaytarish",
+      "createdAt": "2026-10-24T10:41:00.000Z"
+    },
+    {
+      "id": "tx_1792835278304_tnpj4c",
+      "userId": "u_1792835263776_bei109",
+      "type": "escrow_lock",
+      "amount": -43111,
+      "balanceAfter": 1456889,
+      "description": "Garant xavfsiz bitimi #deal_179 uchun mablag' ushlab turildi (Akkaunt tezroq oling)",
+      "status": "completed",
+      "provider": "Garant Escrow",
+      "createdAt": "2026-10-24T09:47:58.304Z"
+    },
+    {
+      "id": "tx_1792835263785_zqqaqe",
+      "userId": "u_1792835263776_bei109",
+      "type": "topup",
+      "amount": 1500000,
+      "balanceAfter": 1500000,
+      "description": "Boshqaruvchi (Admin) hisob balansi",
+      "status": "completed",
+      "provider": "Bonus / Start",
+      "createdAt": "2026-10-24T09:47:43.785Z"
+    },
+    {
+      "id": "tx_1792834831500_96ppoa",
+      "userId": "u_1792834831487_5o8y3v",
+      "type": "topup",
+      "amount": 1500000,
+      "balanceAfter": 1500000,
+      "description": "Boshqaruvchi (Admin) hisob balansi",
+      "status": "completed",
+      "provider": "Bonus / Start",
+      "createdAt": "2026-10-24T09:40:31.500Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev_1792837050604",
+      "dealId": "deal_1792836859760_nae7x2",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "buyerId": "u_1792835263776_bei109",
+      "buyerName": "Umar",
+      "rating": 5,
+      "comment": "Juda tez va ishonchli, rahmat!",
+      "createdAt": "2026-10-24T10:17:30.604Z"
+    },
+    {
+      "id": "rev_1792837041380",
+      "dealId": "deal_1792836859760_nae7x2",
+      "sellerId": "u_1792834831487_5o8y3v",
+      "buyerId": "u_1792835263776_bei109",
+      "buyerName": "Umar",
+      "rating": 5,
+      "comment": "Juda tez va ishonchli, rahmat!",
+      "createdAt": "2026-10-24T10:17:21.380Z"
+    }
+  ]
 }
